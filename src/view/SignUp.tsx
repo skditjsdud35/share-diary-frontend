@@ -126,7 +126,7 @@ function SignUp() {
             },
         }).then((res) => {
             setIsDuplicationLoading(false);
-            if (res.data.validationLoginId) {
+            if (res.data) {
                 alert("이미 존재하는 아이디입니다.")
             } else {
                 setIsDuplication(true);
