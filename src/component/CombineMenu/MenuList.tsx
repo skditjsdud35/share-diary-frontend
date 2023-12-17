@@ -1,29 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faMedal } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { loginState } from "../../atom/loginState";
-import { useRecoilValue } from "recoil";
-import { diaryUpdateState } from "../../atom/recoil";
-
-interface IDiaryList {
-  id: number;
-  name: string;
-  createBy: string;
-  modifyBy: string;
-}
+import { useRecoilState, useRecoilValue } from "recoil";
+import { diaryListState, diaryUpdateState } from "../../atom/recoil";
 
 function MenuList(props: { isMenuOpen: boolean }) {
   const navigate = useNavigate();
   const isLoggedIn = useRecoilValue(loginState);
   const diaryUpdate = useRecoilValue(diaryUpdateState);
-  const [diaryList, setDiaryList] = useState<IDiaryList[]>([]);
+  const [diaryList, setDiaryList] = useRecoilState(diaryListState);
   const { diaryRoom } = useParams();
 
   useEffect(() => {
-    const data = () => {
+    if (isLoggedIn) {
       axios
         .get("/api/v0/diary-rooms", {
           headers: { Authorization: localStorage.getItem("login-token") },
@@ -36,10 +29,8 @@ function MenuList(props: { isMenuOpen: boolean }) {
         .catch((error) => {
           console.log(error, "menuList");
         });
-    };
-
-    data();
-  }, [isLoggedIn, diaryUpdate]);
+    }
+  }, [isLoggedIn, diaryUpdate, setDiaryList]);
 
   return (
     <ListWrap display={props.isMenuOpen ? "block" : "none"}>
