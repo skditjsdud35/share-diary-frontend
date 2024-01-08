@@ -59,11 +59,11 @@ function isNickname(asValue: string) {
 }
 
 
-function SignUp() {
+const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
     let navigate = useNavigate();
     const [loadings, setLoadings] = useState<boolean[]>([]);
-    const [isDuplication, setIsDuplication] = useState(false);
-    const [isDuplicationLoading, setIsDuplicationLoading] = useState(false);
+    const [isDuplication, setIsDuplication] = useState([false, false]);
+    const [isDuplicationLoading, setIsDuplicationLoading] = useState([false, false]);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [id, setId] = useState('');
     const [email, setEmail] = useState('');
@@ -73,11 +73,12 @@ function SignUp() {
 
     //회원가입 req
     const handleSignUp = () => {
+        console.log(userEmail)
         if (!isDuplication) {
             alert('아이디 중복체크를 해주세요.'); return;
         }
 
-        if (!id || !email || !password || !rePassword || !nickName) {
+        if (!id || !password || !rePassword || !nickName || !email) {
             alert('모든 필드를 입력해 주세요.'); return;
         }
 
@@ -117,7 +118,9 @@ function SignUp() {
 
     //아이디 중복 체크
     const chkDupId = () => {
-        setIsDuplicationLoading(true);
+        //setIsDuplicationLoading(true);
+        isDuplicationLoading[0] = true
+        setIsDuplicationLoading([...isDuplicationLoading])
         axios({
             method: "post",
             url: "/api/member/loginId/validation",
@@ -125,16 +128,49 @@ function SignUp() {
                 loginId: id
             },
         }).then((res) => {
-            setIsDuplicationLoading(false);
-            if (res.data.validationLoginId) {
+            //setIsDuplicationLoading(false);
+            isDuplicationLoading[0] = false
+            setIsDuplicationLoading([...isDuplicationLoading])
+            if (res.data) {
                 alert("이미 존재하는 아이디입니다.")
             } else {
-                setIsDuplication(true);
+                //setIsDuplication(true);
+                isDuplication[0] = true
+                setIsDuplication([...isDuplication])
                 alert("사용 가능한 아이디입니다.")
             }
         }).catch(function (error) {
             console.log(error.toJSON());
         });
+    };
+
+    //이메일 인증
+    const chkDupEmail = () => {
+        //setIsDuplicationLoading(true);
+        isDuplicationLoading[1] = true
+        setIsDuplicationLoading([...isDuplicationLoading])
+        axios({
+            method: "post",
+            url: "/api/member/email/validation",
+            data: {
+                email: email
+            },
+        }).then((res) => {
+            // setIsDuplicationLoading(false);
+            isDuplicationLoading[1] = false
+            setIsDuplicationLoading([...isDuplicationLoading])
+            if (res.data) {
+                alert("이미 존재하는 이메일입니다.")
+            } else {
+                //setIsDuplication(true);
+                isDuplication[1] = true
+                setIsDuplication([...isDuplication])
+                alert("사용 가능한 이메일입니다.")
+            }
+        }).catch(function (error) {
+            console.log(error.toJSON());
+        });
+
     };
 
     return (
@@ -157,24 +193,34 @@ function SignUp() {
                                         isId(value) ? Promise.resolve() : Promise.reject('영문으로 시작하는 영문 또는 숫자 6~20자를 입력해 주세요.'),
                                 },]}>
                                 <FormItemWraper>
-                                    <Input style={{ marginRight: '8px' }} onChange={e => setId(e.target.value)} disabled={isDuplication} />
-                                    <Button type="primary" loading={isDuplicationLoading} onClick={chkDupId} disabled={isDuplication}>
+                                    <Input style={{ marginRight: '8px' }} onChange={e => setId(e.target.value)} disabled={isDuplication[0]} />
+                                    <Button type="primary" loading={isDuplicationLoading[0]} onClick={chkDupId} disabled={isDuplication[0]}>
                                         중복 체크
                                     </Button>
                                 </FormItemWraper>
                             </MyFormItem>
-                            <MyFormItem name="email" label="이메일" rules={[
-                                {
-                                    validator: (_, value) =>
-                                        isEmail(value) ? Promise.resolve() : Promise.reject('이메일 형식이 아닙니다.'),
-                                },]}>
-                                <FormItemWraper>
-                                    <Input style={{ marginRight: '8px' }} onChange={e => setEmail(e.target.value)} />
-                                    <Button type="primary" loading={false}>
-                                        인증하기
-                                    </Button>
-                                </FormItemWraper>
-                            </MyFormItem>
+
+                            {
+                                userEmail ? <MyFormItem name="email" label="이메일">
+                                    <FormItemWraper>
+                                        <Input style={{ marginRight: '8px' }} value={userEmail || ''} disabled />
+                                        <Button type="primary" loading={false} disabled>
+                                            중복 체크
+                                        </Button>
+                                    </FormItemWraper>
+                                </MyFormItem> : <MyFormItem name="email" label="이메일" rules={[
+                                    {
+                                        validator: (_, value) =>
+                                            isEmail(value) ? Promise.resolve() : Promise.reject('이메일 형식이 아닙니다.'),
+                                    },]}>
+                                    <FormItemWraper>
+                                        <Input style={{ marginRight: '8px' }} onChange={e => setEmail(e.target.value)} disabled={isDuplication[1]} />
+                                        <Button type="primary" loading={isDuplicationLoading[1]} onClick={chkDupEmail} disabled={isDuplication[1]}>
+                                            중복 체크
+                                        </Button>
+                                    </FormItemWraper>
+                                </MyFormItem>
+                            }
                             <MyFormItem name="password" label="비밀번호" rules={[
                                 {
                                     validator: (_, value) =>
@@ -204,6 +250,7 @@ function SignUp() {
                     </Form>)}
             </StyledCard>
         </StyledBackgroud>
+
     );
 }
 
