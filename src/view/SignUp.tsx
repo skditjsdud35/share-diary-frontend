@@ -74,8 +74,8 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
     //회원가입 req
     const handleSignUp = () => {
         console.log(userEmail)
-        if (!isDuplication) {
-            alert('아이디 중복체크를 해주세요.'); return;
+        if (!isDuplication[0] || !isDuplication[1]) {
+            alert('중복체크를 완료해주세요.'); return;
         }
 
         if (!id || !password || !rePassword || !nickName || !email) {
