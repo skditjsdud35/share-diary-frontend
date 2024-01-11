@@ -73,10 +73,6 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
 
     //회원가입 req
     const handleSignUp = () => {
-        console.log(userEmail)
-        if (!isDuplication[0] || !isDuplication[1]) {
-            alert('중복체크를 완료해주세요.'); return;
-        }
 
         if (!id || !password || !rePassword || !nickName || !email) {
             alert('모든 필드를 입력해 주세요.'); return;
@@ -88,6 +84,10 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
 
         if (!isId(id) || !isEmail(email) || !isPassword(password) || !isNickname(nickName)) {
             alert('필드를 형식에 맞추어 입력해 주세요.'); return;
+        }
+
+        if (!isDuplication[0] || !isDuplication[1]) {
+            alert('중복체크를 완료해주세요.'); return;
         }
 
         axios({
@@ -119,6 +119,9 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
     //아이디 중복 체크
     const chkDupId = () => {
         //setIsDuplicationLoading(true);
+        if (!isId(id)) {
+            alert('필드를 형식에 맞추어 입력해 주세요.'); return;
+        }
         isDuplicationLoading[0] = true
         setIsDuplicationLoading([...isDuplicationLoading])
         axios({
@@ -146,6 +149,9 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
 
     //이메일 인증
     const chkDupEmail = () => {
+        if (!isEmail(email)) {
+            alert('필드를 형식에 맞추어 입력해 주세요.'); return;
+        }
         //setIsDuplicationLoading(true);
         isDuplicationLoading[1] = true
         setIsDuplicationLoading([...isDuplicationLoading])

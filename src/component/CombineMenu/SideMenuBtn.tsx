@@ -28,7 +28,7 @@ function SideMenuBtn(props: { isMenuOpen: boolean }) {
       <BtnsWrap display={props.isMenuOpen ? "block" : "none"}>
         <button
           onClick={() => {
-            navigate("/write");
+            navigate("/write", { state: { modify: false } });
           }}
         >
           오늘의 일기쓰기
