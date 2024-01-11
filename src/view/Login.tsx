@@ -81,9 +81,9 @@ function Login() {
             <Text onClick={() => navigate('/find')}>아이디/비밀번호 찾기</Text>
           </StyledTextContain>
 
-          <Divider>또는</Divider>
+          {/* <Divider>또는</Divider>
 
-          <SocialLogin />
+          <SocialLogin /> */}
         </StyledForm>
       </StyledCard>
     </StyledBackgroud>
