@@ -1,19 +1,38 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell } from "@fortawesome/free-regular-svg-icons";
 import styled from "styled-components";
 import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { isMenuOpenState } from "../../atom/uiAtom";
-import { useRecoilState } from "recoil";
 import { loginState } from "../../atom/loginState";
 import axios from "axios";
+import { Avatar, Badge } from 'antd';
+import { Noti } from "../../types/types"
+import { useQuery } from 'react-query';
+import { getNotiList } from '../../api/Fetcher'
+
 
 function Header() {
   const setIsMenuOpen = useSetRecoilState(isMenuOpenState);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
+  const [count, setCount] = useState(0);
   let navigate = useNavigate();
+  let accessToken = localStorage.getItem('login-token');
+
+
+  const { data: notiData } =
+    useQuery({
+      queryKey: ['notiData'],
+      queryFn: () => getNotiList(String(accessToken))
+    })
+
+  //알림갯수
+  const countNoti = (data: Noti[]) => {
+    const acceptedItems: Noti[] = data?.filter(item => item.status === "INVITE");
+    return acceptedItems?.length || 0;
+  }
+
 
   //로그아웃
   const handleLogout = () => {
@@ -27,7 +46,7 @@ function Header() {
     }).then((response) => {
       setIsLoggedIn(false);
       localStorage.removeItem("login-token");
-      console.log(response);
+      navigate("/");
     });
   };
 
@@ -43,29 +62,28 @@ function Header() {
       </div>
       <div>
         {isLoggedIn ?
-          <><span className="bell">
-            <Icon icon={faBell} />
-            <span className="red" />
-          </span>
-            <span className="myInfo"
+          <>
+            <span style={{ position: "absolute", top: "35%", right: "105px" }}
               onClick={() => {
                 navigate("/mypage");
               }}>
-              <Icon icon={faUser} />
+              <Badge size="small" count={notiData ? Number(countNoti(notiData?.data)) : 0}>
+                <Icon icon={faUser} />
+              </Badge>
             </span>
-            <span
+            <Login
               className="login-btn"
-              onClick={handleLogout}>로그아웃</span>
+              onClick={handleLogout}>로그아웃</Login>
           </> :
           <>
-            <span
+            <Login
               className="login-btn"
               onClick={() => {
                 navigate("/userLogin");
-              }}>로그인</span>
+              }}>로그인</Login>
           </>}
       </div>
-    </HeaderWrap>
+    </HeaderWrap >
   );
 }
 
@@ -84,6 +102,8 @@ const HeaderWrap = styled.div`
   padding: 0.75rem 1rem;
   position: relative;
   height: 60px;
+  // background: #333333;
+  background: white;
 
   h1 {
     font-weight: bold;
@@ -93,41 +113,17 @@ const HeaderWrap = styled.div`
     cursor: pointer;
   }
 
-  span {
-    margin: 0 0.375rem;
-    cursor: pointer;
 
-    svg {
-      margin-bottom: -3px;
-    }
-
-    :last-child {
-      margin-right: 0;
-      margin-bottom: 0;
-    }
-  }
-
-  .bell {
-    position: relative;
-  }
-
-  .red {
-    background: red;
-    position: absolute;
-    margin: 0;
-    border-radius: 50%;
-    top: 8px;
-    right: -1px;
-    width: 8px;
-    height: 8px;
-  }
-
-  .login-btn {
-    text-align: center;
-    font-size: 12px;
-    display: inline-block;
-    border: 1px solid #d9d9d9;
-    border-radius: 20px;
-    padding: 0.5rem 1rem;
-  }
 `;
+
+const Login = styled.div`
+  cursor: pointer;
+  text-align: center;
+  font-size: 12px;
+  display: inline-block;
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  margin-left: 20px;
+`;
+
