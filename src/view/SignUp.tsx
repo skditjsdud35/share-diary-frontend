@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import { Button, Card, Form, Input, Typography } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import { Form, Input } from 'antd';
 import { useNavigate } from "react-router-dom";
 import type { FormItemProps } from 'antd';
 import axios from 'axios';
+import DarkButton from '../../component/Common/DarkButton';
+import BasicCard from '../../component/Common/BasicCard';
+import * as S from './SignUpStyle'
 
 
-const { Title: AntTitle } = Typography;
 const MyFormItemContext = React.createContext<(string | number)[]>([]);
 
 interface MyFormItemGroupProps {
@@ -106,19 +106,8 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
         });
     };
 
-    //회원가입 카드 타이틀 컴포넌트
-    const title = (
-        <CardHeader>
-            <Title>
-                <AntTitle level={5}>회원가입</AntTitle>
-            </Title>
-            <CloseOutlined onClick={() => navigate(-1)} style={{ marginTop: "4px", color: "#787878" }} />
-        </CardHeader>
-    );
-
     //아이디 중복 체크
     const chkDupId = () => {
-        //setIsDuplicationLoading(true);
         if (!isId(id)) {
             alert('필드를 형식에 맞추어 입력해 주세요.'); return;
         }
@@ -131,13 +120,11 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
                 loginId: id
             },
         }).then((res) => {
-            //setIsDuplicationLoading(false);
             isDuplicationLoading[0] = false
             setIsDuplicationLoading([...isDuplicationLoading])
             if (res.data) {
                 alert("이미 존재하는 아이디입니다.")
             } else {
-                //setIsDuplication(true);
                 isDuplication[0] = true
                 setIsDuplication([...isDuplication])
                 alert("사용 가능한 아이디입니다.")
@@ -152,7 +139,6 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
         if (!isEmail(email)) {
             alert('필드를 형식에 맞추어 입력해 주세요.'); return;
         }
-        //setIsDuplicationLoading(true);
         isDuplicationLoading[1] = true
         setIsDuplicationLoading([...isDuplicationLoading])
         axios({
@@ -162,13 +148,11 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
                 email: email
             },
         }).then((res) => {
-            // setIsDuplicationLoading(false);
             isDuplicationLoading[1] = false
             setIsDuplicationLoading([...isDuplicationLoading])
             if (res.data) {
                 alert("이미 존재하는 이메일입니다.")
             } else {
-                //setIsDuplication(true);
                 isDuplication[1] = true
                 setIsDuplication([...isDuplication])
                 alert("사용 가능한 이메일입니다.")
@@ -181,14 +165,13 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
 
     return (
 
-        <StyledBackgroud>
-            <StyledCard title={title}>
+        <S.StyledBackgroud>
+            <BasicCard>
+                <S.Title>회원가입</S.Title>
                 {isSubmitted ? (
                     <>
-                        <SuccessMessage>회원가입이 완료되었습니다.</SuccessMessage>
-                        <Button type="primary" style={{ width: '100%' }} onClick={() => navigate('/userLogin')}>
-                            로그인 화면으로
-                        </Button>
+                        <S.SuccessMessage>회원가입이 완료되었습니다.</S.SuccessMessage>
+                        <DarkButton content='로그인 화면으로' style={{ width: '100%' }} onClick={() => navigate('/userLogin')} />
                     </>
                 ) : (
                     <Form name="form_item_path" layout="vertical">
@@ -198,33 +181,27 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
                                     validator: (_, value) =>
                                         isId(value) ? Promise.resolve() : Promise.reject('영문으로 시작하는 영문 또는 숫자 6~20자를 입력해 주세요.'),
                                 },]}>
-                                <FormItemWraper>
+                                <S.FormItemWraper>
                                     <Input style={{ marginRight: '8px' }} onChange={e => setId(e.target.value)} disabled={isDuplication[0]} />
-                                    <Button type="primary" loading={isDuplicationLoading[0]} onClick={chkDupId} disabled={isDuplication[0]}>
-                                        중복 체크
-                                    </Button>
-                                </FormItemWraper>
+                                    <DarkButton content='중복 체크' loading={isDuplicationLoading[0]} onClick={chkDupId} disabled={isDuplication[0]} />
+                                </S.FormItemWraper>
                             </MyFormItem>
 
                             {
                                 userEmail ? <MyFormItem name="email" label="이메일">
-                                    <FormItemWraper>
+                                    <S.FormItemWraper>
                                         <Input style={{ marginRight: '8px' }} value={userEmail || ''} disabled />
-                                        <Button type="primary" loading={false} disabled>
-                                            중복 체크
-                                        </Button>
-                                    </FormItemWraper>
+                                        <DarkButton content='중복 체크' loading={false} disabled />
+                                    </S.FormItemWraper>
                                 </MyFormItem> : <MyFormItem name="email" label="이메일" rules={[
                                     {
                                         validator: (_, value) =>
                                             isEmail(value) ? Promise.resolve() : Promise.reject('이메일 형식이 아닙니다.'),
                                     },]}>
-                                    <FormItemWraper>
+                                    <S.FormItemWraper>
                                         <Input style={{ marginRight: '8px' }} onChange={e => setEmail(e.target.value)} disabled={isDuplication[1]} />
-                                        <Button type="primary" loading={isDuplicationLoading[1]} onClick={chkDupEmail} disabled={isDuplication[1]}>
-                                            중복 체크
-                                        </Button>
-                                    </FormItemWraper>
+                                        <DarkButton content='중복 체크' loading={isDuplicationLoading[1]} onClick={chkDupEmail} disabled={isDuplication[1]} />
+                                    </S.FormItemWraper>
                                 </MyFormItem>
                             }
                             <MyFormItem name="password" label="비밀번호" rules={[
@@ -250,70 +227,12 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
                                 <Input onChange={e => setNickName(e.target.value)} />
                             </MyFormItem>
                         </MyFormItemGroup>
-                        <Button type="primary" htmlType="submit" style={{ width: '100%' }} onClick={handleSignUp}>
-                            가입하기
-                        </Button>
+                        <DarkButton style={{ width: '100%' }} content='가입하기' htmlType="submit" onClick={handleSignUp} />
                     </Form>)}
-            </StyledCard>
-        </StyledBackgroud>
+            </BasicCard>
+        </S.StyledBackgroud>
 
     );
 }
 
 export default SignUp;
-
-//색상 차트
-const colors = {
-    lightgrey: "#ababab",
-    darkgrey: "#7d7d7d",
-    blue: "#4287f5",
-    background: "#f5f6fa"
-};
-
-const Title = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-    margin-left: 15px;
-`;
-
-const StyledBackgroud = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100vw;
-    height: 100vh;
-    background-color: ${colors.background};
-`;
-
-const StyledCard = styled(Card)`
-  width: 400px;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
-  @media screen and (max-width: 500px) {
-    width: 90%;
-}
-`;
-
-const CardHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  width: 100%;
-`;
-
-const FormItemWraper = styled.div`
-  display: flex;
-`;
-
-const SuccessMessage = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 200px;
-    font-size: 20px;
-    font-weight: bold;
-`;
-
-

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
-import Login from '../view/Login';
-import SignUp from '../view/SignUp';
+import Login from '../view/Login/Login';
+import SignUp from '../view/SignUp/SignUp';
 import { checkUuid } from '../api/Fetcher'
 import { useQuery } from 'react-query';
 

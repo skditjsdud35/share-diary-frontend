@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import ComponentsWrapper from "../styles/ComponentsWrapper";
+import ComponentsWrapper from "../../styles/ComponentsWrapper";
 import { Tabs } from 'antd';
-import MyProfile from '../component/Mypage/MyProfile';
-import NotiList from '../component/Mypage/NotiList';
+import MyProfile from '../../component/Mypage/MyProfile';
+import NotiList from '../../component/Mypage/NotiList';
 
 function MyPage() {
   const [tabBarGutter, setTabBarGutter] = useState(200);
