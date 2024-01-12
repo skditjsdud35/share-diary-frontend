@@ -7,10 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { isMenuOpenState } from "../../atom/uiAtom";
 import { loginState } from "../../atom/loginState";
 import axios from "axios";
-import { Avatar, Badge } from 'antd';
+import { Badge } from 'antd';
 import { Noti } from "../../types/types"
 import { useQuery } from 'react-query';
 import { getNotiList } from '../../api/Fetcher'
+import RoundButton from "../Common/RoundButton";
+import { Dropdown, Menu } from 'antd';
 
 
 function Header() {
@@ -50,6 +52,28 @@ function Header() {
     });
   };
 
+
+  const handleMenuClick = (e: any) => {
+    switch (e.key) {
+      case '1':
+        navigate("/myprofile");
+        break;
+      case '2':
+        navigate("/noti");
+        break;
+      default:
+        break;
+    }
+  };
+
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="1">마이 페이지</Menu.Item>
+      <Menu.Item key="2">알림 내역</Menu.Item>
+    </Menu>
+  );
+
+
   return (
     <HeaderWrap>
       <div>
@@ -63,25 +87,18 @@ function Header() {
       <div>
         {isLoggedIn ?
           <>
-            <span style={{ position: "absolute", top: "35%", right: "105px" }}
-              onClick={() => {
-                navigate("/mypage");
-              }}>
-              <Badge size="small" count={notiData ? Number(countNoti(notiData?.data)) : 0}>
-                <Icon icon={faUser} />
-              </Badge>
+            <span style={{ position: "absolute", top: "35%", right: "105px", marginRight: "10px" }}>
+              <Dropdown overlay={menu} trigger={['click']} placement="bottomLeft">
+                <a onClick={(e) => e.preventDefault()}>
+                  <Badge size="small" count={notiData ? Number(countNoti(notiData?.data)) : 0}>
+                    <Icon icon={faUser} />
+                  </Badge>
+                </a>
+              </Dropdown>
             </span>
-            <Login
-              className="login-btn"
-              onClick={handleLogout}>로그아웃</Login>
+            <RoundButton content="로그아웃" onClick={handleLogout} />
           </> :
-          <>
-            <Login
-              className="login-btn"
-              onClick={() => {
-                navigate("/userLogin");
-              }}>로그인</Login>
-          </>}
+          <RoundButton content="로그인" onClick={() => { navigate("/userLogin") }} />}
       </div>
     </HeaderWrap >
   );
@@ -116,14 +133,4 @@ const HeaderWrap = styled.div`
 
 `;
 
-const Login = styled.div`
-  cursor: pointer;
-  text-align: center;
-  font-size: 12px;
-  display: inline-block;
-  border: 1px solid #d9d9d9;
-  border-radius: 20px;
-  padding: 0.5rem 1rem;
-  margin-left: 20px;
-`;
 

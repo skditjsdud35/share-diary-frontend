@@ -9,4 +9,10 @@ const loginState = atom<boolean>({
     effects_UNSTABLE: [persistAtom],
   });
 
-export { loginState };
+const socialLoginProvider = atom<string>({
+    key: 'provider',
+    default: "",
+  });
+
+
+export { loginState, socialLoginProvider };

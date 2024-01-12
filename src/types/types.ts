@@ -45,6 +45,13 @@ export interface DiaryContent {
     status: string;
   }
 
+export interface Room {
+    id: number;
+    name: string;
+    status: string;
+    createBy: string;
+    modifyBy: string;
+}
 
  
 

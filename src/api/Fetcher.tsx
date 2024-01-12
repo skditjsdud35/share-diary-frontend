@@ -1,71 +1,101 @@
-import axios from 'axios';
-import * as t from '../types/common'
-let accessToken = localStorage.getItem('login-token');
+import axiosInstance from '../utils/TokenRefresher';
+import * as t from '../types/types'
 
 //날짜별 일기 조회 API
-export const getDiary = (Diary: t.SearchDiary) => {
-    console.log(accessToken)
-    axios.get('/api/v0/daily-diaries', {
-        headers: { Authorization: accessToken },
+export const getDiary = async ({ diaryRoomId, searchDate, memberId, token }: { diaryRoomId: number, searchDate: string, memberId: number, token: string }) => {
+    const res = await axiosInstance.get('/api/v0/daily-diaries', {
+        headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+        },
         params: {
-            diaryRoomId: Diary.diaryRoomId,
-            searchDate: Diary.searchDate,
-            memberId: Diary.memberId
+            diaryRoomId: diaryRoomId,
+            searchDate: searchDate,
+            memberId: memberId
         }
-    }).then(res => res.data);
-
+    });
+    return res.data;
 }
 
-
 //날짜별 일기 수정 API
-export const patchDiary = (Diary: t.ModifyDiary) =>
-    axios.patch(`/api/v0/daily-diaries/${Diary.diaryId}`, {
+export const patchDiary = async (Diary: t.Diary) => {
+    const res = await axiosInstance.patch(`/api/v0/daily-diaries/${Diary.diaryId}`, {
         content: Diary.content,
         feeling: Diary.feeling,
         diaryRooms: Diary.diaryRooms,
-        status: Diary.diaryStatus ? "HIDE" : "SHOW"
+        status: Diary.status ? "HIDE" : "SHOW"
     }, {
-        headers: { Authorization: accessToken }
-    }).then(res => res.data);
+        headers: { Authorization: Diary.token }
+    });
+    return res.data;
+}
 
+//내가 속한 일기방 조회 API
+export const getDiaryRooms = async ({ token }: { token: string }) => {
+    const res = await axiosInstance.get('/api/v0/diary-rooms', {
+        headers: { Authorization: token },
+        params: {
+            limit: 10,
+        }
+    });
+    return res.data;
+}
 
 //일기방 멤버 조회 API
-export const getMember = (Member: t.SearchDiary) =>
-    axios.get(`/api/v0/diary-rooms/${Member.diaryRoomId}/members`, {
-        headers: { Authorization: accessToken },
+export const getMember = async ({ diaryRoomId, searchDate, token }: { diaryRoomId: number, searchDate: string, token: string }) => {
+    const res = await axiosInstance.get(`/api/v0/diary-rooms/${diaryRoomId}/members`, {
+        headers: { Authorization: token },
         params: {
-            searchDate: Member.searchDate,
+            searchDate: searchDate,
         }
-    }).then(res => res.data.memberInfos);
-
+    });
+    return res.data.memberInfos;
+}
 
 //일기방 이모지 조회 API
-export const getEmoji = (diaryId: number) =>
-    axios.get(`/api/emoji/${diaryId}`, {
-        headers: { Authorization: accessToken },
-    }).then(res => res.data);
-
+export const getEmoji = async ({ diaryId, token }: { diaryId: number, token: string }) => {
+    const res = await axiosInstance.get(`/api/emoji/${diaryId}`, {
+        headers: { Authorization: token },
+    });
+    return res.data;
+}
 
 //일기방 이모지 저장 API
-export const postEmoji = ({ diaryId, emoji }: { diaryId: number, emoji: string }) =>
-    axios.post(`/api/emoji/${diaryId}`, {
+export const postEmoji = async ({ diaryId, emoji, token }: { diaryId: number, emoji: string[], token: string }) => {
+    const res = await axiosInstance.post(`/api/emoji/${diaryId}`, {
         emoji: emoji
     }, {
-        headers: { Authorization: accessToken },
-    }).then(res => res.data);
+        headers: { Authorization: token },
+    });
+    return res.data;
+}
 
+//알림내역 조회 API
+export const getNotiList = async (token: string) => {
+    const res = await axiosInstance.get('/api/v0/member-invite-histories', {
+        headers: { Authorization: token },
+        params: {
+            limit: 10,
+        }
+    });
+    return res.data;
+}
 
-//마이페이지 알림 내역 조회 API
-export const getNotiList = () =>
-    axios.get('/api/v0/member-invite-histories', {
-        headers: { Authorization: accessToken },
-    }).then(res => res.data);
-
+//알림내역 수락&거절 API
+export const patchNotiList = async ({ historyId, status, token }: { historyId: number, status: string, token: string }) => {
+    const res = await axiosInstance.patch(`/api/v0/member-invite-histories/${historyId}`, {
+        status: status,
+    }, {
+        headers: { Authorization: token },
+    });
+    return res.data;
+}
 
 //uuid 체크 API
-export const checkUuid = (uuid: string) =>
-    axios.get(`/api/member/uuid/${uuid}`).then(res => res.data);
-
+export const checkUuid = async (uuid: string) => {
+    const res = await axiosInstance.get(`/api/member/uuid/${uuid}`);
+    return res.data;
+}
 
 //export const fetchData1 = () => axios.get('https://api.github.com/repos/tannerlinsley/react-query');
 

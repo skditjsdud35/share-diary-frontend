@@ -14,7 +14,8 @@ function ShareCalender() {
     const month = String(new Date(e).getMonth() + 1).padStart(2, "0");
     const date = String(new Date(e).getDate()).padStart(2, "0");
 
-    setSelectDate(`${year}년 ${month}월 ${date}일`);
+    const formattedDate = `${year}-${month}-${date}`;
+    setSelectDate(formattedDate);
   };
 
   return (

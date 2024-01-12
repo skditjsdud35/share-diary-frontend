@@ -8,13 +8,10 @@ function Carousel() {
         <div>
             <StyledSlider {...settings}>
                 <div>
-                    <CardImg src='img/carousel_test1.png' />
+                    <CardImg src='img/1.png' />
                 </div>
                 <div>
-                    <CardImg src='img/carousel_test2.png' />
-                </div>
-                <div>
-                    <CardImg src='img/carousel_test3.png' />
+                    <CardImg src='img/2.png' />
                 </div>
             </StyledSlider>
         </div>

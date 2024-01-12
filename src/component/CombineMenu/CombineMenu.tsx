@@ -7,10 +7,12 @@ import { useMediaQuery } from "react-responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { isMenuOpenState } from "../../atom/uiAtom";
+import BasicButton from "../Common/BasicButton";
 
 function CombineMenu() {
   const [isMenuOpen, setIsMenuOpen] = useRecoilState(isMenuOpenState);
   const [delay, setDelay] = useState(false);
+  const [showText, setShowText] = useState(false);
 
   const width860 = useMediaQuery({
     query: "(max-width:860px)",
@@ -19,14 +21,17 @@ function CombineMenu() {
   useEffect(() => {
     if (isMenuOpen) {
       setDelay(true);
+      setTimeout(() => {
+        setShowText(true);
+      }, 500);
     } else {
+      setShowText(false);
       setDelay(false);
     }
   }, [isMenuOpen]);
 
   return (
     <CombineNav className="menu" width={isMenuOpen ? "240px" : "0px"}>
-      <div className="logo"></div>
       {width860 ? (
         <FontAwesomeIcon
           icon={faXmark}
@@ -34,8 +39,11 @@ function CombineMenu() {
           onClick={() => setIsMenuOpen(false)}
         />
       ) : null}
-      <MenuList isMenuOpen={delay} />
-      <SideMenuBtn isMenuOpen={delay} />
+
+      {showText ? <>
+        <MenuList isMenuOpen={delay} />
+        <SideMenuBtn isMenuOpen={delay} />
+      </> : <></>}
     </CombineNav>
   );
 }
@@ -45,17 +53,9 @@ export default CombineMenu;
 const CombineNav = styled.nav<{ width: string }>`
   border-right: 1px solid #d9d9d9;
   box-shadow: 1px 0px 5px #d9d9d9;
-  background: #fff;
-
-  .logo {
-    width: ${(props) => props.width};
-    transition: width 0.3s linear;
-    height: 40px;
-    background: #d6d4e6;
-    margin: 1rem auto 0;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+  background: #F2F2FF;
+  width: ${(props) => props.width};
+  transition: width 0.5s ease-in-out;
 
   .close {
     position: absolute;
@@ -63,10 +63,5 @@ const CombineNav = styled.nav<{ width: string }>`
     top: 1.5rem;
     font-size: 20px;
   }
-
-  @media (max-width: 860px) {
-    .logo {
-      transition: none;
-    }
   }
 `;

@@ -7,5 +7,10 @@ const diaryContent = atom<DiaryContent[]>({
     default: [],
   });
 
+const memberEmail = atom<string>({
+    key: 'memberEmail',
+    default: '',
+  });
 
-export { diaryContent };
+
+export { diaryContent,memberEmail };

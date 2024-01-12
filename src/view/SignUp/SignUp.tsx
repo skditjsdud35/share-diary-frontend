@@ -164,7 +164,6 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
     };
 
     return (
-
         <S.StyledBackgroud>
             <BasicCard>
                 <S.Title>회원가입</S.Title>
