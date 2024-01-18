@@ -7,9 +7,9 @@ import ComponentsWrapper from "../../styles/ComponentsWrapper";
 function Main() {
   return <ComponentsWrapper>
     <>
-      <Carousel />
+      {/* <Carousel />
       <InfoText />
-      <UsageText />
+      <UsageText /> */}
     </>
   </ComponentsWrapper>;
 }

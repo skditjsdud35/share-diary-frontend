@@ -34,6 +34,7 @@ function Login() {
       },
     }).then((res) => {
       localStorage.setItem('login-token', res.data.accessToken);
+
       setIsLoggedIn(true);
       navigate("/");
     }).catch(function (error) {

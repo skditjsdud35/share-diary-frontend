@@ -12,42 +12,42 @@ import useModal from '../../hooks/useModal';
 
 
 function DeleteRoom() {
-    const [diaryRooms, setDiaryRooms] = useState<Array<{ value: string; label: string }>>([]);
-    const [selectedRoom, setSelectedRoom] = useState(-1)
-    const [isModalVisible, showModal, closeModal] = useModal();
-    const accessToken = localStorage.getItem('login-token');
-    const email = useRecoilValue(memberEmail);
-    const year = new Date().getFullYear();
-    const month = String(new Date().getMonth() + 1).padStart(2, "0");
-    const date = String(new Date().getDate()).padStart(2, "0");
+    // const [diaryRooms, setDiaryRooms] = useState<Array<{ value: string; label: string }>>([]);
+    // const [selectedRoom, setSelectedRoom] = useState(-1)
+    // const [isModalVisible, showModal, closeModal] = useModal();
+    // const accessToken = localStorage.getItem('login-token');
+    // const email = useRecoilValue(memberEmail);
+    // const year = new Date().getFullYear();
+    // const month = String(new Date().getMonth() + 1).padStart(2, "0");
+    // const date = String(new Date().getDate()).padStart(2, "0");
 
-    const formattedDate = `${year}-${month}-${date}`;
+    // const formattedDate = `${year}-${month}-${date}`;
 
-    //일기 조회
-    const { data: diaryRoomData, isError: diaryError } = useQuery(
-        ['diaryRoomData'], () => getDiaryRooms({
-            token: String(accessToken)
-        }));
+    // //일기 조회
+    // const { data: diaryRoomData, isError: diaryError } = useQuery(
+    //     ['diaryRoomData'], () => getDiaryRooms({
+    //         token: String(accessToken)
+    //     }));
 
-    //일기방 멤버 조회
-    const { data: memberData, isError: memberError } = useQuery(
-        ['memberData', selectedRoom], () => getMember({
-            diaryRoomId: Number(selectedRoom),
-            searchDate: formattedDate,
-            token: String(accessToken)
-        }));
+    // //일기방 멤버 조회
+    // const { data: memberData, isError: memberError } = useQuery(
+    //     ['memberData', selectedRoom], () => getMember({
+    //         diaryRoomId: Number(selectedRoom),
+    //         searchDate: formattedDate,
+    //         token: String(accessToken)
+    //     }));
 
-    if (diaryError) {
-        return <div>에러가 발생했습니다: {diaryError}</div>;
-    }
+    // if (diaryError) {
+    //     return <div>에러가 발생했습니다: {diaryError}</div>;
+    // }
 
-    if (!diaryRoomData) {
-        return <div>데이터를 로딩 중입니다...</div>;
-    }
+    // if (!diaryRoomData) {
+    //     return <div>데이터를 로딩 중입니다...</div>;
+    // }
 
     return (
         <Card style={{ width: '90%', margin: '20px auto', marginBottom: '100px', borderColor: '#c0c0c0' }} title="일기방 나가기">
-            {diaryRoomData?.map((i: Room) => (
+            {/* {diaryRoomData?.map((i: Room) => (
                 <div
                     key={i.id}
                     onClick={() => {
@@ -74,7 +74,7 @@ function DeleteRoom() {
                     </div>
                 ))}
 
-            </Modal>
+            </Modal> */}
         </Card>
     );
 }

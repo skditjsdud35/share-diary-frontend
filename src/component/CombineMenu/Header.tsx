@@ -10,9 +10,9 @@ import axios from "axios";
 import { Badge } from 'antd';
 import { Noti } from "../../types/types"
 import { useQuery } from 'react-query';
-import { getNotiList } from '../../api/Fetcher'
 import RoundButton from "../Common/RoundButton";
 import { Dropdown, Menu } from 'antd';
+import axiosInstance from "../../utils/TokenRefresher";
 
 
 function Header() {
@@ -23,22 +23,9 @@ function Header() {
   let accessToken = localStorage.getItem('login-token');
 
 
-  const { data: notiData } =
-    useQuery({
-      queryKey: ['notiData'],
-      queryFn: () => getNotiList(String(accessToken))
-    })
-
-  //알림갯수
-  const countNoti = (data: Noti[]) => {
-    const acceptedItems: Noti[] = data?.filter(item => item.status === "INVITE");
-    return acceptedItems?.length || 0;
-  }
-
-
   //로그아웃
   const handleLogout = () => {
-    axios({
+    axiosInstance({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -49,7 +36,10 @@ function Header() {
       setIsLoggedIn(false);
       localStorage.removeItem("login-token");
       navigate("/");
-    });
+    })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
 
@@ -90,9 +80,7 @@ function Header() {
             <span style={{ position: "absolute", top: "35%", right: "105px", marginRight: "10px" }}>
               <Dropdown overlay={menu} trigger={['click']} placement="bottomLeft">
                 <a onClick={(e) => e.preventDefault()}>
-                  <Badge size="small" count={notiData ? Number(countNoti(notiData?.data)) : 0}>
-                    <Icon icon={faUser} />
-                  </Badge>
+                  <Icon icon={faUser} />
                 </a>
               </Dropdown>
             </span>

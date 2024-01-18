@@ -11,6 +11,7 @@ import useModal from '../../hooks/useModal';
 import ComponentsWrapper from '../../styles/ComponentsWrapper';
 import * as S from './MyProfileStyle'
 import DeleteRoom from '../../component/Mypage/DeleteRoom';
+import axiosInstance from '../../utils/TokenRefresher';
 
 function MyProfile() {
     let navigate = useNavigate();
@@ -21,10 +22,20 @@ function MyProfile() {
     const [nickname, setNickname] = useState<string>('');
     const [email, setEmail] = useRecoilState(memberEmail);
     const [id, setId] = useState<string>('');
+    const getCookie = (name: string) => {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
 
     useEffect(() => {
         if (!isLoggedIn) {
-            navigate('/');
+            // navigate('/');
         } else {
             axios({
                 method: "GET",
@@ -36,7 +47,15 @@ function MyProfile() {
                     setNickname(res.data.nickName)
                     setId(res.data.loginId)
 
-                });
+                })
+                .catch(res => {
+                    if (res.response.status === 401) {
+                        axios({
+                            method: "GET",
+                            url: '/api/auth/token'
+                        })
+                    }
+                })
         }
     }, [isLoggedIn, navigate, accessToken]);
 

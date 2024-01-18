@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "http://localhost:3000",
+    headers: { "Content-type": "application/json" }
 });
 
 //쿠키 조회
@@ -29,6 +30,7 @@ axiosInstance.interceptors.response.use(
 
         if (statusCode === 419 || statusCode === 401) {
             const refreshToken = getCookie("REFRESH_TOKEN");
+            console.log(refreshToken)
 
             if (!refreshToken) {
                 window.location.href = "/";
@@ -36,20 +38,25 @@ axiosInstance.interceptors.response.use(
             }
 
             try {
-                const refreshResponse = await axiosInstance.post('/api/auth/token', {
+                const refreshResponse = await axiosInstance.get('/api/auth/token', {
+                    withCredentials: true,
                     params: {
-                        refreshToken: refreshToken,
-                    }
+                        refreshToken: refreshToken
+                    },
+
                 });
+
                 const newAccessToken = refreshResponse.data.accessToken;
+                console.log(newAccessToken)
                 localStorage.setItem("login-token", newAccessToken);
                 error.config.headers["Authorization"] = `${newAccessToken}`;
                 return axiosInstance(error.config);
             } catch (refreshError) {
-                removeCookie("REFRESH_TOKEN");
-                localStorage.removeItem("login-token");
-                window.location.href = "/";
-                return Promise.reject(refreshError);
+                // removeCookie("REFRESH_TOKEN");
+                // localStorage.removeItem("login-token");
+                // window.location.href = "/";
+                // return Promise.reject(refreshError);
+                console.log(refreshError)
             }
         }
         return Promise.reject(error);

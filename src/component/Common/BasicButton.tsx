@@ -22,7 +22,7 @@ const BasicButton = ({ content, ...props }: ButtonProps) => {
 export default BasicButton;
 
 const ButtonWrap = styled.button`
-    width: 100%;
+    width: 90%;
     display: block;
     background: white;
     color: #6664FF;
