@@ -38,25 +38,18 @@ axiosInstance.interceptors.response.use(
             }
 
             try {
-                const refreshResponse = await axiosInstance.get('/api/auth/token', {
-                    withCredentials: true,
-                    params: {
-                        refreshToken: refreshToken
-                    },
-
-                });
-
+                const refreshResponse = await axiosInstance.get('/api/auth/token');
                 const newAccessToken = refreshResponse.data.accessToken;
                 console.log(newAccessToken)
                 localStorage.setItem("login-token", newAccessToken);
                 error.config.headers["Authorization"] = `${newAccessToken}`;
                 return axiosInstance(error.config);
             } catch (refreshError) {
-                // removeCookie("REFRESH_TOKEN");
-                // localStorage.removeItem("login-token");
-                // window.location.href = "/";
-                // return Promise.reject(refreshError);
-                console.log(refreshError)
+                removeCookie("REFRESH_TOKEN");
+                localStorage.removeItem("login-token");
+                localStorage.removeItem("recoil-persist");
+                window.location.href = "/";
+                return Promise.reject(refreshError);
             }
         }
         return Promise.reject(error);
