@@ -39,7 +39,7 @@ function NotiList() {
         const updatedList = [...sortedList];
         const historyId = id
 
-        axios({
+        axiosInstance({
             method: "PATCH",
             url: `/api/v0/member-invite-histories/${historyId}`,
             data: {
