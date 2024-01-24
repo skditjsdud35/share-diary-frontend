@@ -28,7 +28,7 @@ const ButtonWrap = styled.button`
     color: #6664FF;
     font-size: 16px;
     border: solid 1px #CCCCCC;
-    margin: 20px auto 0;
+    margin: 0 auto;
     padding: 0.625rem 0;
     border-radius: 6px;
     cursor: pointer;
