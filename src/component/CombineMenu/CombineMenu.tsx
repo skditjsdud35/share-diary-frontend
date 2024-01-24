@@ -60,7 +60,7 @@ const CombineNav = styled.nav<{ width: string }>`
   .close {
     position: absolute;
     right: 2rem;
-    top: 1.5rem;
+    top: 2rem;
     font-size: 20px;
   }
   }

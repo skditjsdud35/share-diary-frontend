@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
-import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useSetRecoilState, useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { isMenuOpenState } from "../../atom/uiAtom";
 import { loginState } from "../../atom/loginState";
-import axios from "axios";
-import { Badge } from 'antd';
-import { Noti } from "../../types/types"
-import { useQuery } from 'react-query';
 import RoundButton from "../Common/RoundButton";
 import { Dropdown, Menu } from 'antd';
 import axiosInstance from "../../utils/TokenRefresher";
@@ -79,8 +75,8 @@ function Header() {
           <>
             <span style={{ position: "absolute", top: "35%", right: "105px", marginRight: "10px" }}>
               <Dropdown overlay={menu} trigger={['click']} placement="bottomLeft">
-                <a onClick={(e) => e.preventDefault()}>
-                  <Icon icon={faUser} />
+                <a>
+                  <img alt="user-profile" src="/img/user-profile.png" style={{ cursor: "pointer", width: "28px", height: "28px" }} />
                 </a>
               </Dropdown>
             </span>

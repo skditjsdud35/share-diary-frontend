@@ -9,6 +9,8 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { diaryListState, diaryUpdateState } from "../../atom/recoil";
 import BasicButton from "../Common/BasicButton";
 import Modal from "../Modal/SideMenuModal";
+import { useMediaQuery } from "react-responsive";
+import axiosInstance from "../../utils/TokenRefresher";
 
 function MenuList(props: { isMenuOpen: boolean }) {
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ function MenuList(props: { isMenuOpen: boolean }) {
 
   useEffect(() => {
     if (isLoggedIn) {
-      axios
+      axiosInstance
         .get("/api/v0/diary-rooms", {
           headers: { Authorization: localStorage.getItem("login-token") },
           params: {
@@ -38,7 +40,7 @@ function MenuList(props: { isMenuOpen: boolean }) {
           console.log(error, "menuList");
         });
     }
-  }, [diaryUpdate, setDiaryList]);
+  }, []);
 
 
   const showModal = (create: boolean) => {
@@ -50,6 +52,10 @@ function MenuList(props: { isMenuOpen: boolean }) {
     setIsModalVisible(false);
   };
 
+  const width860 = useMediaQuery({
+    query: "(max-width:860px)",
+  });
+
   return (
     <>
       <Modal
@@ -59,7 +65,7 @@ function MenuList(props: { isMenuOpen: boolean }) {
       />
       <ListWrap display={props.isMenuOpen ? "block" : "none"}>
         <div onClick={() => showModal(true)}>
-          <BasicButton content="+&nbsp;일기방 만들기" />
+          <BasicButton content="+&nbsp;일기방 만들기" style={width860 ? { width: '50%', marginTop: '20px' } : { marginTop: '20px' }} />
         </div>
         {/* <div className="ranking-tab" onClick={() => navigate("/ranking")}>
         일기방 랭킹
