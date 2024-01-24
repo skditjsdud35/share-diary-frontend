@@ -28,6 +28,7 @@ export interface Noti {
     hostUserId: number;
     status: string;
     memberId: number;
+    hostUserNickname : string;
     diaryRoomId: number;
     diaryRoomName: string;
     createDate: string;

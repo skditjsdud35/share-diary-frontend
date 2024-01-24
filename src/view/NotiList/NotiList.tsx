@@ -4,14 +4,13 @@ import { Card, Button } from 'antd';
 import { useMediaQuery } from 'react-responsive'
 import { loginState } from "../../atom/loginState";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios'
+import axiosInstance from '../../utils/TokenRefresher';
 import { useRecoilState } from "recoil";
-import { useQuery, useInfiniteQuery } from 'react-query';
-import { getNotiList } from '../../api/Fetcher'
 import { Noti } from '../../types/types'
 import ComponentsWrapper from '../../styles/ComponentsWrapper';
 import DarkButton from '../../component/Common/DarkButton';
 import BasicButton from '../../component/Common/BasicButton';
+import NoDataSection from '../../component/Common/NoDataSection';
 
 function NotiList() {
 
@@ -21,27 +20,19 @@ function NotiList() {
     const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
     const [sortedList, setSortedList] = useState<any[]>([]);
 
-    const { data: notiData } =
-        useQuery({
-            queryKey: ['notiData'],
-            queryFn: () => getNotiList(String(accessToken))
+    useEffect(() => {
+        axiosInstance.get('/api/v0/member-invite-histories', {
+            headers: { Authorization: accessToken },
+            params: {
+                limit: 10,
+            }
+        }).then((res) => {
+            if (res.status === 200) {
+                setSortedList(res.data.data);
+            }
         })
+    }, []);
 
-
-    // useEffect(() => {
-
-    //     if (notiData?.data) {
-    //         const sortedData = sortNotiData(notiData.data);
-    //         setSortedList(sortedData);
-    //     }
-    // }, [notiData]);
-
-
-    // const sortNotiData = (notiList: Noti[]) => {
-    //     return notiList.sort((a: Noti, b: Noti) => {
-    //         return new Date(b.inviteDate).valueOf() - new Date(a.inviteDate).valueOf();
-    //     });
-    // };
 
     // 수락 & 거절
     const handleButtonClick = (action: string, id: number, index: number) => {
@@ -64,7 +55,7 @@ function NotiList() {
                 setSortedList(updatedList);
             })
             .catch(error => {
-                // Handle error
+                alert("에러가 발생하였습니다")
             });
     };
 
@@ -72,37 +63,45 @@ function NotiList() {
     return (
         <ComponentsWrapper>
             <Container>
-                {notiData?.data?.map((item: Noti, index: number) => (
-                    <>
-                        {/* <DateText key={index}>{item.inviteDate}</DateText> */}
-                        {item.status !== "CANCEL" && (
+                {sortedList ? (
+                    sortedList.map((item: Noti, index: number) => (
+                        <>
                             <MyCard>
                                 <NotiContainer>
                                     {(() => {
                                         switch (item.status) {
                                             case "INVITE": case "RE_INVITE":
                                                 return <>
-                                                    <div key={index}><NotiTxt>{item.hostUserId}</NotiTxt>님이 <NotiTxt>{item.diaryRoomName}</NotiTxt>에 초대하였습니다.</div>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '200px' }}>
-                                                        <DarkButton content="수락" onClick={() => handleButtonClick("ACCEPT", item.id, index)} />
-                                                        <BasicButton content="거절" onClick={() => handleButtonClick("DENY", item.id, index)} />
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                        <AllTxt key={index}><NotiTxt>{item.hostUserNickname}</NotiTxt>님이 <NotiTxt>{item.diaryRoomName}</NotiTxt>에 초대하였습니다.</AllTxt>
+                                                        <DateText>{item.inviteDate}</DateText>
+                                                    </div >
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                        <DarkButton style={{ width: '100px', marginRight: '20px' }} content="수락" onClick={() => handleButtonClick("ACCEPT", item.id, index)} />
+                                                        <BasicButton style={{ width: '100px' }} content="거절" onClick={() => handleButtonClick("DENY", item.id, index)} />
                                                     </div>
 
                                                 </>
                                             case "ACCEPT":
-                                                return <div key={index}><NotiTxt>{item.hostUserId}</NotiTxt>님이 보낸 <NotiTxt>{item.diaryRoomName}</NotiTxt> 초대에 수락하셨습니다.</div>
+                                                return <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <AllTxt key={index}><NotiTxt>{item.hostUserNickname}</NotiTxt>님이 보낸 <NotiTxt>{item.diaryRoomName}</NotiTxt> 초대에 수락하셨습니다.</AllTxt>
+                                                    <DateText>{item.inviteDate}</DateText>
+                                                </div>
                                             case "DENY":
-                                                return <div key={index}><NotiTxt>{item.hostUserId}</NotiTxt>님이 보낸 <NotiTxt>{item.diaryRoomName}</NotiTxt> 초대에 거절하셨습니다.</div>
+                                                return <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <AllTxt key={index}><NotiTxt>{item.hostUserNickname}</NotiTxt>님이 보낸 <NotiTxt>{item.diaryRoomName}</NotiTxt> 초대에 거절하셨습니다.</AllTxt>
+                                                    <DateText>{item.inviteDate}</DateText>
+                                                </div>
                                         }
                                     })()}
                                 </NotiContainer>
-                            </MyCard>
-                        )
-                        }
-                    </>
-                ))}
+                            </MyCard >
+                        </>))) : (
+                    <NoDataSection content='알림 내역이 없어요' fontSize="24px" />
+                )
+                }
             </Container>
-        </ComponentsWrapper>
+        </ComponentsWrapper >
     );
 }
 
@@ -122,9 +121,10 @@ const MyCard = styled(Card)`
 `
 
 const DateText = styled.div`
-    font-size: 20px;
-    width: 90%;
-    margin-left: 20px auto;
+    font-size: 10px;
+    color: #999999;
+    margin-left : 7px;
+    margin-top: 5px;
 `
 const NotiContainer = styled.div`
     display: flex;
@@ -132,14 +132,12 @@ const NotiContainer = styled.div`
 `;
 
 const NotiTxt = styled.div`
-    color: #6495ED;
+    color: #8281FF;
     margin-top : 7px;
     font-weight : bold;
     display: inline-block;
 `
 
-const MyButton = styled(Button)`
-    margin : 3px;
-    padding: 0 30px;
-    float: right;
+const AllTxt = styled.div`
+    font-size: 18px;
 `
