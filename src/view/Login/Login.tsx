@@ -4,6 +4,7 @@ import { Form, Input } from 'antd';
 import { CloseOutlined, CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { loginId } from '../../atom/diary';
 import { useRecoilState } from 'recoil';
 import { loginState } from '../../atom/loginState';
 import SocialLogin from '../../component/Login/SocialLogin';
@@ -17,6 +18,7 @@ function Login() {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
+  const [userId, setUserId] = useRecoilState(loginId);
 
   //로그인 유지 버튼 클릭
   const handleClick = () => {
@@ -34,7 +36,7 @@ function Login() {
       },
     }).then((res) => {
       localStorage.setItem('login-token', res.data.accessToken);
-
+      setUserId(res.data.memberId)
       setIsLoggedIn(true);
       navigate("/");
     }).catch(function (error) {
