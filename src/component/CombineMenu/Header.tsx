@@ -9,12 +9,14 @@ import { loginState } from "../../atom/loginState";
 import RoundButton from "../Common/RoundButton";
 import { Dropdown, Menu } from 'antd';
 import axiosInstance from "../../utils/TokenRefresher";
+import { diaryListState } from "../../atom/recoil";
 
 
 function Header() {
   const setIsMenuOpen = useSetRecoilState(isMenuOpenState);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
   const [count, setCount] = useState(0);
+  const [diaryList, setDiaryList] = useRecoilState(diaryListState);
   let navigate = useNavigate();
   let accessToken = localStorage.getItem('login-token');
 
@@ -30,6 +32,7 @@ function Header() {
       url: "/api/auth/logout",
     }).then((response) => {
       setIsLoggedIn(false);
+      setDiaryList([]);
       localStorage.removeItem("login-token");
       navigate("/");
     })
