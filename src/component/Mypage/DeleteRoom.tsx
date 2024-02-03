@@ -1,96 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Select, Card } from 'antd';
-import axios from 'axios'
-import { getDiaryRooms, getMember } from '../../api/Fetcher'
-import { Room, Member } from '../../types/types'
-import { useQuery, useMutation, useQueries } from 'react-query';
-import { memberEmail } from "../../atom/diary"
-import { useRecoilValue } from "recoil";
-import { Modal } from "antd";
-import useModal from '../../hooks/useModal';
-
+import { Card } from 'antd';
+import { getDiaryRooms } from '../../api/Fetcher'
+import { Room } from '../../types/types'
+import { useQuery } from 'react-query';
+import NoDataSection from '../Common/NoDataSection';
+import { useRecoilState } from "recoil";
+import { delegateRoomId, loginId, delegateModalShow, isDelegate } from '../../atom/diary';
+import DelegateModal from '../Modal/DelegateModal'
+import BasicButton from '../Common/BasicButton';
 
 function DeleteRoom() {
-    // const [diaryRooms, setDiaryRooms] = useState<Array<{ value: string; label: string }>>([]);
-    // const [selectedRoom, setSelectedRoom] = useState(-1)
-    // const [isModalVisible, showModal, closeModal] = useModal();
-    // const accessToken = localStorage.getItem('login-token');
-    // const email = useRecoilValue(memberEmail);
-    // const year = new Date().getFullYear();
-    // const month = String(new Date().getMonth() + 1).padStart(2, "0");
-    // const date = String(new Date().getDate()).padStart(2, "0");
+    const accessToken = localStorage.getItem('login-token');
+    const [roomId, setRoomId] = useRecoilState(delegateRoomId);
+    const [modalShow, setModalShow] = useRecoilState(delegateModalShow);
+    const [id, setId] = useRecoilState(loginId);
+    const [isDelegateHost, setIsDelegateHost] = useRecoilState(isDelegate);
 
-    // const formattedDate = `${year}-${month}-${date}`;
+    //일기 조회
+    const { data: diaryRoomData, isLoading } = useQuery(
+        ['diaryRoomData'], () => getDiaryRooms({
+            token: String(accessToken)
+        }), {
+        staleTime: Infinity,
+    });
 
-    // //일기 조회
-    // const { data: diaryRoomData, isError: diaryError } = useQuery(
-    //     ['diaryRoomData'], () => getDiaryRooms({
-    //         token: String(accessToken)
-    //     }));
+    const handleClick = ({ createBy, roomId }: { createBy: string, roomId: number }) => {
+        id === createBy ? setIsDelegateHost(true) : setIsDelegateHost(false)
+        setRoomId(roomId)
+        setModalShow(true);
+    }
 
-    // //일기방 멤버 조회
-    // const { data: memberData, isError: memberError } = useQuery(
-    //     ['memberData', selectedRoom], () => getMember({
-    //         diaryRoomId: Number(selectedRoom),
-    //         searchDate: formattedDate,
-    //         token: String(accessToken)
-    //     }));
-
-    // if (diaryError) {
-    //     return <div>에러가 발생했습니다: {diaryError}</div>;
-    // }
-
-    // if (!diaryRoomData) {
-    //     return <div>데이터를 로딩 중입니다...</div>;
-    // }
+    if (isLoading) {
+        return <>로딩중입니다...</>
+    }
 
     return (
-        <Card style={{ width: '90%', margin: '20px auto', marginBottom: '100px', borderColor: '#c0c0c0' }} title="일기방 나가기">
-            {/* {diaryRoomData?.map((i: Room) => (
-                <div
-                    key={i.id}
-                    onClick={() => {
-                        setSelectedRoom(i.id)
-                        showModal()
-                    }}
-                >
-                    {i.name}
-                </div>
-            ))}
-            <Modal
-                onCancel={closeModal}
-                visible={isModalVisible}
-                centered
-                title="방장 위임">
-                {memberData?.map((i: Member) => (
-                    <div key={i?.memberId}>
-                        <input
-                            value={i?.memberId}
-                            name={i?.nickName}
-                            type="radio"
-                        />
-                        {i?.nickName}
-                    </div>
-                ))}
+        <>
+            <Card style={{ width: '90%', margin: '20px auto', marginBottom: '100px', borderColor: '#c0c0c0' }} title="일기방 나가기">
+                {diaryRoomData?.length > 0 ? (
+                    diaryRoomData.map((i: Room) => (
+                        <BasicButton
+                            key={i.id}
+                            content={i.name}
+                            style={{ margin: '20px auto' }}
+                            onClick={() => handleClick({ createBy: i.createBy, roomId: i.id })} />
 
-            </Modal> */}
-        </Card>
+                    ))
+                ) : (
+                    <NoDataSection content='나갈 수 있는 일기방이 없어요' fontSize='16px' />
+                )}
+            </Card >
+        </>
     );
 }
 
 export default DeleteRoom;
 
-const InfoText = styled.div`
-    font-size: 15px;
-    margin-bottom: 5px;
-`
-
-const LinkText = styled.span`
-    float: right; 
-    color: ${props => props.color === "blue" ? "#155bfe" : "red"};
-    cursor: pointer;
-    &:hover {
-        color: ${props => props.color === "blue" ? "#3392ff" : "#ff7373"};
-    }
-`
