@@ -6,7 +6,7 @@ import axios from 'axios';
 import DarkButton from '../../component/Common/DarkButton';
 import BasicCard from '../../component/Common/BasicCard';
 import * as S from './SignUpStyle'
-
+import { isId, isEmail, isPassword, isNickname } from '../../utils/CheckValid';
 
 const MyFormItemContext = React.createContext<(string | number)[]>([]);
 
@@ -34,31 +34,6 @@ const MyFormItem = ({ name, ...props }: FormItemProps) => {
     return <Form.Item name={concatName} {...props} />;
 };
 
-// 아이디 체크 (영문자로 시작하는 영문자 또는 숫자 6~20자)
-function isId(asValue: string) {
-    var regExp = /^[a-z]+[a-z0-9]{5,19}$/g;
-    return regExp.test(asValue); // 형식에 맞는 경우 true 리턴
-}
-
-// 이메일 체크
-function isEmail(asValue: string) {
-    var regExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
-    return regExp.test(asValue);
-}
-
-// 비밀번호 체크 (8 ~ 16자 영문, 숫자, 특수문자 조합)
-function isPassword(asValue: string) {
-    var regExp = /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
-    return regExp.test(asValue); // 형식에 맞는 경우 true 리턴
-}
-
-// 닉네임 체크 (최대 20자)
-function isNickname(asValue: string) {
-    var regExp = /^.{1,20}$/;
-    return regExp.test(asValue); // 형식에 맞는 경우 true 리턴
-}
-
-
 const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
     let navigate = useNavigate();
     const [loadings, setLoadings] = useState<boolean[]>([]);
@@ -66,7 +41,7 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
     const [isDuplicationLoading, setIsDuplicationLoading] = useState([false, false]);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [id, setId] = useState('');
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(userEmail ? userEmail : '');
     const [password, setPassword] = useState('');
     const [rePassword, setRePassword] = useState('');
     const [nickName, setNickName] = useState('');
@@ -74,21 +49,26 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
     //회원가입 req
     const handleSignUp = () => {
 
-        if (!id || !password || !rePassword || !nickName || !email) {
-            alert('모든 필드를 입력해 주세요.'); return;
+        if (!id || !password || !rePassword || !nickName || (userEmail && !email)) {
+            alert('모든 필드를 입력해 주세요.');
+            return;
         }
 
         if (password !== rePassword) {
-            alert('비밀번호를 정확히 입력해 주세요.'); return;
+            alert('비밀번호를 정확히 입력해 주세요.');
+            return;
         }
 
-        if (!isId(id) || !isEmail(email) || !isPassword(password) || !isNickname(nickName)) {
-            alert('필드를 형식에 맞추어 입력해 주세요.'); return;
+        if (!isId(id) || (userEmail && !isEmail(email)) || !isPassword(password) || !isNickname(nickName)) {
+            alert('필드를 형식에 맞추어 입력해 주세요.');
+            return;
         }
 
-        if (!isDuplication[0] || !isDuplication[1]) {
-            alert('중복체크를 완료해주세요.'); return;
+        if ((userEmail && !isDuplication[0]) || (!userEmail && (!isDuplication[0] || !isDuplication[1]))) {
+            alert('중복체크를 완료해 주세요.');
+            return;
         }
+
 
         axios({
             method: "post",
