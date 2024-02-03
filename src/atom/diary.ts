@@ -12,5 +12,23 @@ const memberEmail = atom<string>({
     default: '',
   });
 
+const delegateRoomId = atom<number>({
+    key: 'delegateDiaryId',
+    default: 0,
+  });
 
-export { diaryContent,memberEmail };
+  const delegateModalShow = atom<boolean>({
+    key: 'delegateModalShow',
+    default: false,
+  });
+
+
+const loginId = atom<string>({
+    key: 'loginId',
+    default: '',
+  });
+
+
+
+
+export { diaryContent,memberEmail,delegateRoomId, delegateModalShow, loginId  };
