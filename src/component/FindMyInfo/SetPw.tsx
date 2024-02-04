@@ -107,7 +107,7 @@ const SetPw = () => {
                         label="아이디"
                         rules={[{ required: true, message: '아이디를 입력해주세요' }]}>
                         <div style={{ display: "flex" }}>
-                            <Input />
+                            <Input onChange={e => setLoginId(e.target.value)} />
                         </div>
                     </Form.Item>
                     <Form.Item
@@ -115,7 +115,7 @@ const SetPw = () => {
                         label="이메일"
                         rules={[{ type: 'email', message: '유효하지 않은 이메일 형식입니다' }, { required: true, message: '이메일을 입력해주세요' }]}>
                         <div style={{ display: "flex" }}>
-                            <Input style={{ marginRight: "5px" }} />
+                            <Input style={{ marginRight: "5px" }} onChange={e => setEmail(e.target.value)} />
                             <DarkButton content="인증번호 발송" style={{ width: "150px" }} onClick={sendCertNumber} />
                         </div>
                     </Form.Item>
