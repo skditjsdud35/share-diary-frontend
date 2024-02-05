@@ -68,7 +68,7 @@ const SetPw = () => {
             method: "POST",
             url: "/api/member/resetPassword",
             data: {
-                //loginId: loginId,
+                loginId: loginId,
                 password: certNumber,
             },
         }).then((res) => {
@@ -88,7 +88,7 @@ const SetPw = () => {
                         label="새 비밀번호"
                         rules={[{ required: true, message: '새로운 비밀번호를 입력해주세요' }]}>
                         <div style={{ display: "flex" }}>
-                            <Input />
+                            <Input onChange={e => setPassword(e.target.value)} />
                         </div>
                     </Form.Item>
                     <Form.Item
@@ -96,7 +96,7 @@ const SetPw = () => {
                         label="새 비밀번호 재입력"
                         rules={[{ required: true, message: '새로운 비밀번호를 입력해주세요' }]}>
                         <div style={{ display: "flex" }}>
-                            <Input />
+                            <Input onChange={e => setRePassword(e.target.value)} />
                         </div>
                     </Form.Item>
                     <DarkButton style={{ width: '100%' }} content="비밀번호 재설정" htmlType="submit" onClick={resetPassword} />
