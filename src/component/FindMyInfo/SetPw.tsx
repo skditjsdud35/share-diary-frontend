@@ -3,8 +3,10 @@ import { Form, Input } from 'antd';
 import axios from "axios";
 import DarkButton from '../Common/DarkButton'
 import { isPassword } from '../../utils/CheckValid';
+import { useNavigate } from "react-router-dom";
 
 const SetPw = () => {
+    let navigate = useNavigate();
     const [loginId, setLoginId] = useState('')
     const [email, setEmail] = useState('')
     const [certNumber, setCertNumber] = useState('')
@@ -69,10 +71,11 @@ const SetPw = () => {
             url: "/api/member/resetPassword",
             data: {
                 loginId: loginId,
-                password: certNumber,
+                password: password,
             },
         }).then((res) => {
             alert("비밀번호가 재설정되었습니다.")
+            navigate("/userLogin");
         })
             .catch(function (error) {
                 alert("비밀번호 재설정에 실패했습니다.");
@@ -88,7 +91,7 @@ const SetPw = () => {
                         label="새 비밀번호"
                         rules={[{ required: true, message: '새로운 비밀번호를 입력해주세요' }]}>
                         <div style={{ display: "flex" }}>
-                            <Input onChange={e => setPassword(e.target.value)} />
+                            <Input.Password onChange={e => setPassword(e.target.value)} />
                         </div>
                     </Form.Item>
                     <Form.Item
@@ -96,7 +99,7 @@ const SetPw = () => {
                         label="새 비밀번호 재입력"
                         rules={[{ required: true, message: '새로운 비밀번호를 입력해주세요' }]}>
                         <div style={{ display: "flex" }}>
-                            <Input onChange={e => setRePassword(e.target.value)} />
+                            <Input.Password onChange={e => setRePassword(e.target.value)} />
                         </div>
                     </Form.Item>
                     <DarkButton style={{ width: '100%' }} content="비밀번호 재설정" htmlType="submit" onClick={resetPassword} />
