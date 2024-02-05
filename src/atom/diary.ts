@@ -22,6 +22,10 @@ const delegateRoomId = atom<number>({
     default: false,
   });
 
+  const isDelegate = atom<boolean>({
+    key: 'isDelegate',
+    default: false,
+  });
 
 const loginId = atom<string>({
     key: 'loginId',
@@ -31,4 +35,4 @@ const loginId = atom<string>({
 
 
 
-export { diaryContent,memberEmail,delegateRoomId, delegateModalShow, loginId  };
+export { diaryContent,memberEmail,delegateRoomId, delegateModalShow, isDelegate, loginId  };
