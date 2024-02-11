@@ -58,10 +58,10 @@ function Login() {
             <Input.Password placeholder="비밀번호" onChange={e => setPassword(e.target.value)} />
           </S.StyledFormItem>
 
-          <S.StyledTextContain color="#ababab" justifyContent="start" marginBottom="10px" onClick={handleClick}>
+          {/* <S.StyledTextContain color="#ababab" justifyContent="start" marginBottom="10px" onClick={handleClick}>
             {isChecked ? <CheckCircleFilled /> : <CheckCircleOutlined />}
             <S.StyledCheckText>로그인 상태 유지</S.StyledCheckText>
-          </S.StyledTextContain>
+          </S.StyledTextContain> */}
 
           <S.StyledFormItem>
             <DarkButton style={{ width: '90%' }} content='로그인' onClick={handleLogin} />

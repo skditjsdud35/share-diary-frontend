@@ -5,6 +5,9 @@ const axiosInstance = axios.create({
     headers: { "Content-type": "application/json" }
 });
 
+let isRefreshing = false;
+let refreshPromise: Promise<any> | null = null;
+
 //쿠키 조회
 const getCookie = (name: string) => {
     var nameEQ = name + "=";
@@ -37,19 +40,44 @@ axiosInstance.interceptors.response.use(
                 return Promise.reject(error);
             }
 
-            try {
-                const refreshResponse = await axiosInstance.get('/api/auth/token');
-                const newAccessToken = refreshResponse.data.accessToken;
-                console.log(newAccessToken)
-                localStorage.setItem("login-token", newAccessToken);
-                error.config.headers["Authorization"] = `${newAccessToken}`;
-                return axiosInstance(error.config);
-            } catch (refreshError) {
-                removeCookie("REFRESH_TOKEN");
-                localStorage.removeItem("login-token");
-                localStorage.removeItem("recoil-persist");
-                window.location.href = "/";
-                return Promise.reject(refreshError);
+            if (!isRefreshing) {
+                isRefreshing = true;
+
+                try {
+                    const refreshResponse = await axiosInstance.get('/api/auth/token');
+                    console.log("성공?")
+                    const newAccessToken = refreshResponse.data.accessToken;
+                    console.log(newAccessToken);
+                    localStorage.setItem("login-token", newAccessToken);
+                    error.config.headers["Authorization"] = `${newAccessToken}`;
+                    return axiosInstance(error.config);
+                } catch (refreshError) {
+
+                    removeCookie("REFRESH_TOKEN");
+                    localStorage.removeItem("login-token");
+                    localStorage.removeItem("recoil-persist");
+                    window.location.href = "/";
+                    return Promise.reject(refreshError);
+                } finally {
+                    isRefreshing = false;
+                }
+            } else {
+                console.log("33")
+
+                if (!refreshPromise) {
+                    refreshPromise = new Promise((resolve) => {
+                        const checkRefresh = () => {
+                            if (!isRefreshing) {
+                                resolve(axiosInstance(error.config));
+                                refreshPromise = null;
+                                clearInterval(interval);
+                            }
+                        };
+                        const interval = setInterval(checkRefresh, 100);
+                    });
+                }
+
+                return refreshPromise;
             }
         }
         return Promise.reject(error);

@@ -7,7 +7,7 @@ import axios from "axios";
 import { loginState } from "../../atom/loginState";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { diaryListState, diaryUpdateState } from "../../atom/recoil";
-import { selectedDiaryId } from "../../atom/diary";
+import { selectedDiaryId, delegateModalShow } from "../../atom/diary";
 import BasicButton from "../Common/BasicButton";
 import Modal from "../Modal/SideMenuModal";
 import { useMediaQuery } from "react-responsive";
@@ -23,6 +23,7 @@ function MenuList(props: { isMenuOpen: boolean }) {
   const [diaryList, setDiaryList] = useRecoilState(diaryListState);
   const [diaryId, setDiaryId] = useRecoilState(selectedDiaryId);
   const { diaryRoom } = useParams();
+  const [modalShow, setModalShow] = useRecoilState(delegateModalShow);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
   const [lastId, setLastId] = useState(null);
@@ -63,7 +64,7 @@ function MenuList(props: { isMenuOpen: boolean }) {
     if (isLoggedIn) {
       fetchData();
     }
-  }, [diaryUpdate]);
+  }, [diaryUpdate, modalShow]);
 
 
   const showModal = (create: boolean) => {

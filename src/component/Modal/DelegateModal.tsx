@@ -4,7 +4,7 @@ import { getMember } from '../../api/Fetcher'
 import { Member } from '../../types/types'
 import { useQuery } from 'react-query';
 import { useRecoilState } from "recoil";
-import { delegateRoomId, delegateModalShow, loginId, isDelegate } from '../../atom/diary';
+import { delegateRoomId, delegateModalShow, loginId, isDelegate, loginNickname } from '../../atom/diary';
 import axiosInstance from "../../utils/TokenRefresher";
 
 
@@ -25,6 +25,8 @@ const DelegateModal = (props: ModalProps) => {
     const [modalShow, setModalShow] = useRecoilState(delegateModalShow);
     const [isDelegateHost, setIsDelegateHost] = useRecoilState(isDelegate);
     const formattedDate = `${year}-${month}-${date}`;
+    const [id, setId] = useRecoilState(loginId);
+    const [nickName, setNickName] = useRecoilState(loginNickname);
 
 
     //위임하기
@@ -40,13 +42,18 @@ const DelegateModal = (props: ModalProps) => {
                 Authorization: localStorage.getItem("login-token"),
             },
             data: {
-                asIsHostId: loginId,
+                asIsHostId: id,
                 toBeHostId: selectedMemberId
             },
             url: `/api/v0/diary-rooms/${roomId}`,
         }).then((response) => {
-            console.log(response);
-            setModalShow(false);
+            if (response.data) {
+                alert("방장 위임을 완료했습니다")
+                setModalShow(false);
+            } else {
+                alert("방장 위임에 실패했습니다. 다시 시도해주세요.")
+                setModalShow(false);
+            }
         })
             .catch((error) => {
                 console.log(error);
@@ -63,7 +70,13 @@ const DelegateModal = (props: ModalProps) => {
             },
             url: `/api/v0/diary-rooms/${roomId}`,
         }).then((response) => {
-            alert("일기방 나가기를 완료했습니다")
+            if (response.data) {
+                alert("일기방 나가기를 완료했습니다")
+                setModalShow(false);
+            } else {
+                alert("일기방 나가기에 실패하였습니다. 다시 시도해주세요.")
+                setModalShow(false);
+            }
         })
             .catch((error) => {
                 console.log(error);
@@ -99,13 +112,13 @@ const DelegateModal = (props: ModalProps) => {
                     cancelText="취소"
                 >
                     {memberData?.map((member: Member) => (
-                        <Checkbox
-                            key={member?.memberId}
-                            onChange={() => setSelectedMemberId(member?.memberId)}>
-                            {member?.nickName}
-                        </Checkbox>
-                    )
-                    )}
+                        member?.memberId !== id ?
+                            <Checkbox
+                                key={member?.memberId}
+                                onChange={() => setSelectedMemberId(member?.memberId)}>
+                                {member?.nickName}
+                            </Checkbox> : null
+                    ))}
                 </Modal> :
                 <Modal
                     centered

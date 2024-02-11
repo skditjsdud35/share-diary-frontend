@@ -13,7 +13,7 @@ import { diaryListState } from "../../atom/recoil";
 
 
 function Header() {
-  const setIsMenuOpen = useSetRecoilState(isMenuOpenState);
+  const [isMenuOpen, setIsMenuOpen] = useRecoilState(isMenuOpenState);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
   const [count, setCount] = useState(0);
   const [diaryList, setDiaryList] = useRecoilState(diaryListState);
@@ -26,7 +26,6 @@ function Header() {
     axiosInstance({
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: localStorage.getItem("login-token"),
       },
       url: "/api/auth/logout",
@@ -73,16 +72,16 @@ function Header() {
         />
         <h1 onClick={() => { navigate("/"); }} style={{ cursor: "pointer" }}>잇츠 다이어리</h1>
       </div>
-      <div>
+      <div style={{ marginRight: "30px", display: "flex" }}>
         {isLoggedIn ?
           <>
-            <span style={{ position: "absolute", top: "35%", right: "105px", marginRight: "10px" }}>
+            <div style={{ marginTop: "5px", marginRight: "10px" }}>
               <Dropdown overlay={menu} trigger={['click']} placement="bottomLeft">
-                <a>
+                <span>
                   <img alt="user-profile" src="/img/user-profile.png" style={{ cursor: "pointer", width: "28px", height: "28px" }} />
-                </a>
+                </span>
               </Dropdown>
-            </span>
+            </div>
             <RoundButton content="로그아웃" onClick={handleLogout} />
           </> :
           <RoundButton content="로그인" onClick={() => { navigate("/userLogin") }} />}
@@ -94,20 +93,21 @@ function Header() {
 export default Header;
 
 const Icon = styled(FontAwesomeIcon)`
-  font-size:25px;
+  font-size: 25px;
 `
 
 const HeaderWrap = styled.div`
+  z-index: 999;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 18px;
   border-bottom: 1px solid #d9d9d9;
   padding: 0.75rem 1rem;
-  position: relative;
   height: 60px;
-  // background: #333333;
   background: white;
+  top: 0; 
+  width: 100%; 
 
   h1 {
     font-weight: bold;

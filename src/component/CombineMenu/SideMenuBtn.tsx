@@ -3,12 +3,16 @@ import styled from "styled-components";
 import Modal from "../Modal/SideMenuModal";
 import { useNavigate, useParams } from "react-router-dom";
 import BasicButton from "../Common/BasicButton";
+import { loginId, diaryRoomHostId } from "../../atom/diary";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 function SideMenuBtn(props: { isMenuOpen: boolean }) {
   let navigate = useNavigate();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
   const { diaryRoom } = useParams();
+  const [userId, setUserId] = useRecoilState(loginId);
+  const [hostId, setHostId] = useRecoilState(diaryRoomHostId);
 
   const showModal = (create: boolean) => {
     setIsCreate(create);
@@ -30,10 +34,10 @@ function SideMenuBtn(props: { isMenuOpen: boolean }) {
         <div onClick={() => {
           navigate("/write", { state: { modify: false } });
         }}>
-          <BasicButton content="오늘의 일기쓰기" />
+          <BasicButton content="오늘의 일기쓰기" style={{ marginBottom: "10px" }} />
         </div>
 
-        {diaryRoom !== undefined && (
+        {String(userId) === String(hostId) && (
           <div onClick={() => showModal(false)}>
             <BasicButton content="일기방 초대하기" />
           </div>

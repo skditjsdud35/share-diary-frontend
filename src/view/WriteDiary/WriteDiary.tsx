@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { diaryContent } from "../../atom/diary";
 import { DiaryContent } from "../../types/types";
 import { useLocation } from "react-router-dom";
+import BasicButton from "../../component/Common/BasicButton";
 
 const { TextArea } = Input;
 
@@ -23,6 +24,7 @@ function WriteDiary() {
     const { modify } = location.state;
     const [value, setValue] = useState(modify ? String(diary[1]) : "");
     const [selectedFace, setSelectedFace] = useState(modify ? String(diary[2]) : "");
+    const [selectedPrivate, setSelectedPrivate] = useState(modify ? String(diary[5]) : "");
 
     const today: Date = new Date();
     const year: number = today.getFullYear();
@@ -36,6 +38,11 @@ function WriteDiary() {
         { icon: "img/face-cool.png", text: "REFRESH" },
         { icon: "img/face-muted.png", text: "ANGRY" },
         { icon: "img/face-sad.png", text: "BAD" },
+    ];
+
+    const status = [
+        { text: "공개", status: "SHOW" },
+        { text: "비공개", status: "HIDE" },
     ];
 
     const handleDiaryClick = (index: number) => {
@@ -84,7 +91,7 @@ function WriteDiary() {
             return;
         }
 
-        if (diary.length !== 0) {
+        if (modify) {
             axios({
                 method: "PATCH",
                 url: `/api/v0/daily-diaries/${diary[3]}`,
@@ -93,7 +100,7 @@ function WriteDiary() {
                     content: value,
                     feeling: selectedFace,
                     diaryRooms: [diary[4]],
-                    status: diary[5]
+                    status: selectedPrivate
                 },
             })
                 .then((res) => {
@@ -132,9 +139,8 @@ function WriteDiary() {
     return (
         <ComponentsWrapper>
             <Divider orientation="left">
-
                 <div style={{ fontSize: "30px" }}>
-                    {modify ? <>{diary[0]} 오늘의 일기</> : <>{year}-{month}-{date} 오늘의 일기</>}
+                    {modify ? <>{diary[0]} 오늘의 일기</> : <>{year}년 {month}월 {date}일 오늘의 일기</>}
                 </div>
             </Divider>
             <TextArea
@@ -157,24 +163,36 @@ function WriteDiary() {
                 style={{ margin: "0 auto", width: "85%", display: "block" }}
             >
                 <Card
-                    title="오늘의 기분은 어떠셨나요?"
+                    title="일기방 공개 여부를 선택해주세요."
                     style={{ marginBottom: "20px" }}
                 >
-                    <ImageWrap>
-                        {face.map((i, index) => (
-                            <Image
-                                key={index}
-                                src={i.icon}
-                                style={
-                                    selectedFace === i.text
-                                        ? { backgroundColor: "#ffd400", borderRadius: "50%" }
-                                        : {}
-                                }
-                                onClick={() => handleFaceClick(i.text)}
-                            />
-                        ))}
-                    </ImageWrap>
+                    <div style={{ display: "flex", columnGap: "30px" }}>
+                        {status.map((i, index) => {
+                            return <BasicButton content={i.text} selected={selectedPrivate === i.status} onClick={() => setSelectedPrivate(i.status)} />;
+                        })}
+                    </div>
                 </Card>
+                {modify ? <></> :
+                    <Card
+                        title="오늘의 기분은 어떠셨나요?"
+                        style={{ marginBottom: "20px" }}
+                    >
+                        <ImageWrap>
+                            {face.map((i, index) => (
+                                <Image
+                                    key={index}
+                                    src={i.icon}
+                                    style={
+                                        selectedFace === i.text
+                                            ? { backgroundColor: "#ffd400", borderRadius: "50%" }
+                                            : {}
+                                    }
+                                    onClick={() => handleFaceClick(i.text)}
+                                />
+                            ))}
+                        </ImageWrap>
+                    </Card>
+                }
                 <Card title="어느 일기방에 올릴까요?" style={{ marginBottom: "20px" }}>
                     {modify ?
                         <Space wrap>

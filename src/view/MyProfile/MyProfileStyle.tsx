@@ -19,6 +19,7 @@ margin: 0 auto;
 border-style: solid;
 border-width: 1px;
 color: #c8c8c8;
+margin-bottom: 20px;
 `
 const ProfileImg = styled.img`
 width: 100%;

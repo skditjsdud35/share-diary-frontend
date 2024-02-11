@@ -1,24 +1,30 @@
 import { useRecoilValue, useRecoilState } from "recoil";
 import { selectDateState } from "../../atom/recoil";
-import { diaryContent } from "../../atom/diary";
+import { diaryContent, loginId, diaryRoomHostId, selectedDiaryId } from "../../atom/diary";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
 import { getDiary, getMember, getEmoji, postEmoji } from '../../api/Fetcher'
-import { Diary, Member, } from '../../types/types'
-import { useQuery, useMutation, useQueries } from 'react-query';
+import { Diary, Member } from '../../types/types'
+import { useQuery, useMutation } from 'react-query';
 import { useNavigate } from "react-router-dom";
+import BasicButton from "../Common/BasicButton";
+import LoadDataSection from "../Common/LoadDataSection";
+import NoDataSection from "../Common/NoDataSection";
 
 
 function SelectedDiary() {
   const accessToken = localStorage.getItem('login-token');
   const [clickEmoji, setClickEmoji] = useState([false, false, false, false, false]);
-  const [clickLock, setClickLock] = useState(false);
   const [diary, setDiary] = useRecoilState(diaryContent)
+  const [userId, setUserId] = useRecoilState(loginId)
+  const [hostId, setHostId] = useRecoilState(diaryRoomHostId)
+  const [diaryId, setDiaryId] = useRecoilState(selectedDiaryId)
   const { diaryRoom } = useParams();
   const selectDate = useRecoilValue(selectDateState);
+  const [clickedMemberId, setClickedMemberId] = useState<number>(userId);
   const navigate = useNavigate();
   const emojiList = [
     { emoji: "❤️", name: "heart" },
@@ -27,7 +33,6 @@ function SelectedDiary() {
     { emoji: "🎂", name: "cake" },
     { emoji: "😈", name: "devil" },
   ];
-
 
   //시간 포맷
   const formatTime = (dateString: string): string => {
@@ -42,118 +47,102 @@ function SelectedDiary() {
     return `${periodOfDay} ${formattedHours}:${formattedMinutes}`;
   }
 
-
-  // 클릭한 이모지 배열로 가져오기
-  const getTrueEmojis = (): string[] => {
-    return clickEmoji
-      .map((value, index) => value ? emojiList[index].name : null)
-      .filter(name => name !== null) as string[];
-  }
-
   //멤버 조회
-  const { data: memberData, isError: memberError } = useQuery(
-    ['memberData', selectDate], () => getMember({
+  const { data: memberData, isError: memberError, isLoading: memberLoading } = useQuery(
+    ['memberData', selectDate, diaryId], () => getMember({
       diaryRoomId: Number(diaryRoom),
       searchDate: selectDate,
       token: String(accessToken)
     }));
 
-  const memberId = memberData?.[0]?.memberId
-
-  //일기 조회
-  const { data: diaryData, isError: diaryError } = useQuery(
-    ['diaryData', memberId], () => getDiary({
+  // 일기 조회
+  const { data: diaryData, isError: diaryError, isLoading: diaryLoading } = useQuery(
+    ['diaryData', diaryId, clickedMemberId], () => getDiary({
       diaryRoomId: Number(diaryRoom),
       searchDate: selectDate,
-      memberId: memberId,
+      memberId: clickedMemberId,
       token: String(accessToken)
-    }),
-    {
-      enabled: !!memberData,
-    });
+    }));
 
-  const diaryId = diaryData?.id
+  const diaryDataId = diaryData?.id
+  const hostData = memberData?.find((member: Member) => member.role === 'HOST');
+  setHostId(hostData?.memberId)
+
+  useEffect(() => {
+    return () => {
+      setHostId(0)
+    };
+  }, []);
 
   //이모지 조회
-  const { data: emojiData, isError: emojiError } = useQuery(
-    ['emojiData', diaryId], () => getEmoji({
-      diaryId: diaryId,
+  const { data: emojiData, isError: emojiError, refetch } = useQuery(
+    ['emojiData', diaryDataId, diaryId, clickedMemberId], () => getEmoji({
+      diaryId: diaryDataId,
       token: String(accessToken)
     }),
     {
-      enabled: !!diaryId,
+      enabled: !!diaryDataId,
     });
 
   //이모지 수정
   const { mutate: emojiMutate } = useMutation({
-    mutationFn: () => postEmoji({
-      diaryId: diaryId,
-      emoji: getTrueEmojis(),
+    mutationFn: (emojiName: string) => postEmoji({
+      diaryId: diaryDataId,
+      emoji: emojiName.toUpperCase(),
       token: String(accessToken)
-    })
+    }),
+    onSuccess: () => {
+      refetch();
+    }
   });
-
-  useEffect(() => {
-    if (diaryData) {
-      setClickLock(diaryData?.status);
-    }
-
-    return () => {
-      console.log('컴포넌트가 화면에서 사라짐')
-      emojiMutate();
-    }
-  }, [diaryData]);
-
-
-  //이모지 선택
-  const setData = (i: number) => {
-    let Emoji = [...clickEmoji]
-    Emoji[i] = !Emoji[i]
-    setClickEmoji(Emoji)
-  }
-
-  if (memberError || diaryError || emojiError) {
-    return <h2>오늘의 일기가 없습니다</h2>;
-  }
-
 
   //일기 수정
   const modifyDiary = () => {
-    setDiary([selectDate, diaryData?.content, diaryData?.feeling, diaryId, Number(diaryRoom), diaryData?.status])
+    setDiary([selectDate, diaryData?.content, diaryData?.feeling, diaryDataId, Number(diaryRoom), diaryData?.status])
     navigate("/write", { state: { modify: true } });
+  }
+
+  if (memberError || diaryError || emojiError) {
+    return <NoDataSection content="오늘의 일기가 없습니다" fontSize="24px" />;
+  }
+
+  if (memberLoading || diaryLoading) {
+    return <LoadDataSection />;
   }
 
   return (
     <Wrap>
-      {memberError || diaryError || emojiError ? <h2>오늘의 일기가 없습니다</h2> :
+      {memberError || diaryError ? <h2>오늘의 일기가 없습니다</h2> :
         <div className="left">
           <div className="top">
             <span className="date">{selectDate} 오늘의 일기</span>
-            <span>
+            <span style={{ display: "flex", columnGap: "10px", alignItems: "center" }}>
               <span className="emoji">
                 {emojiList.map((item, i) => (
-                  <span onClick={() => setData(i)}>
+                  <span onClick={() => emojiMutate(emojiList[i].name)}>
                     {item.emoji}
-                    {clickEmoji[i] === false ? <span>{emojiData?.[item.name]}</span> : <span>{emojiData?.[item.name] + 1}</span>}
+                    &nbsp;
+                    {emojiData?.[item.name]}
                   </span>
                 ))}
               </span>
-              <span
-                className="isPrivate"
-              >
-                <FontAwesomeIcon onClick={() => setClickLock(!clickLock)} icon={clickLock ? faLock : faLockOpen} />
-              </span>
+              <span className="diaryTime"> {formatTime(diaryData?.createDate)}</span>
+              <FontAwesomeIcon style={{ color: "#8685ef" }} icon={diaryData?.status === "SHOW" ? faLockOpen : faLock} />
+              <BasicButton onClick={modifyDiary} content="수정하기" style={{ width: '100px' }} />
             </span>
           </div>
-          <div className="diaryTime">[작성시각] {formatTime(diaryData?.createDate)}</div>
-          <button onClick={modifyDiary}>수정하기</button>
           <div className="diary">{diaryData?.content}</div>
         </div>}
 
       <div className="right">
         {memberData?.map((member: Member, i: number) => (
-          <div key={i}>
-            {member.nickName}
+          <div key={i}
+            onClick={() => setClickedMemberId(member.memberId)}
+            style={{
+              backgroundColor: clickedMemberId === member.memberId ? '#dfdfdf' : '',
+              borderRadius: clickedMemberId === member.memberId ? '20px' : ''
+            }}>
+            {member.nickName} {member.role === 'HOST' ? '👑' : ''}
           </div>
         ))}
       </div>
@@ -186,16 +175,13 @@ const Wrap = styled.div`
     font-weight: bold;
   }
 
-  .emoji,
-  .isPrivate {
-    padding-left: 18px;
-  }
 
   .emoji {
     font-size: 15px;
+    margin-top: 5px;
     span {
       cursor: pointer;
-      background: #dfdfdf;
+      border: 1px solid #dfdfdf;
       padding: 0.5rem;
       padding-bottom: 0;
       font-size: 20px;
@@ -215,45 +201,29 @@ const Wrap = styled.div`
     }
   }
 
-  .isPrivate {
-    width: 20px;
-    display: inline-block;
-
-    path {
-      cursor: pointer;
-      color: #8685ef;
-    }
-  }
-
   .diary {
     margin-top: 2rem;
     margin-bottom: 2rem;
-    border: 2px solid #d6d4e6;
-    border-radius: 10px;
     padding: 1rem;
     min-height: 300px;
-  }
-
-  .diaryTime {
-    margin-top: 2rem;
+    border: 1px solid #dfdfdf;
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px #dfdfdf;
   }
 
   .right {
     width: 20%;
     margin-top: 2rem;
-    border: 2px solid #d6d4e6;
-    border-radius: 10px;
     min-height: 100px;
     padding: 1rem;
+    border: 1px solid #dfdfdf;
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px #dfdfdf;
 
     div {
       margin-bottom: 10px;
       padding: 5px;
       cursor: pointer;
-
-      :first-child {
-        background: #d6d4e6;
-      }
     }
   }
 

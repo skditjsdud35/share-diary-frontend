@@ -6,33 +6,36 @@ import { Room } from '../../types/types'
 import { useQuery } from 'react-query';
 import NoDataSection from '../Common/NoDataSection';
 import { useRecoilState } from "recoil";
-import { delegateRoomId, loginId, delegateModalShow, isDelegate } from '../../atom/diary';
+import { delegateRoomId, loginId, delegateModalShow, isDelegate, loginNickname } from '../../atom/diary';
 import DelegateModal from '../Modal/DelegateModal'
 import BasicButton from '../Common/BasicButton';
+import axiosInstance from '../../utils/TokenRefresher';
+import LoadDataSection from '../Common/LoadDataSection';
 
 function DeleteRoom() {
     const accessToken = localStorage.getItem('login-token');
     const [roomId, setRoomId] = useRecoilState(delegateRoomId);
     const [modalShow, setModalShow] = useRecoilState(delegateModalShow);
     const [id, setId] = useRecoilState(loginId);
+    const [nickname, setNickname] = useRecoilState(loginNickname);
     const [isDelegateHost, setIsDelegateHost] = useRecoilState(isDelegate);
 
     //일기 조회
     const { data: diaryRoomData, isLoading } = useQuery(
-        ['diaryRoomData'], () => getDiaryRooms({
+        ['diaryRoomData', modalShow], () => getDiaryRooms({
             token: String(accessToken)
-        }), {
-        staleTime: Infinity,
-    });
+        }));
 
     const handleClick = ({ createBy, roomId }: { createBy: string, roomId: number }) => {
-        id === createBy ? setIsDelegateHost(true) : setIsDelegateHost(false)
+
+        nickname === createBy ? setIsDelegateHost(true) : setIsDelegateHost(false);
+
         setRoomId(roomId)
         setModalShow(true);
     }
 
     if (isLoading) {
-        return <>로딩중입니다...</>
+        return <LoadDataSection />
     }
 
     return (
@@ -48,7 +51,9 @@ function DeleteRoom() {
 
                     ))
                 ) : (
-                    <NoDataSection content='나갈 수 있는 일기방이 없어요' fontSize='16px' />
+                    <div style={{ marginBottom: "50px" }}>
+                        <NoDataSection content='나갈 수 있는 일기방이 없어요' fontSize='16px' />
+                    </div>
                 )}
             </Card >
         </>

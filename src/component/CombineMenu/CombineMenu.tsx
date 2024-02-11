@@ -8,11 +8,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { isMenuOpenState } from "../../atom/uiAtom";
 import BasicButton from "../Common/BasicButton";
+import { diaryListState } from "../../atom/recoil";
 
 function CombineMenu() {
   const [isMenuOpen, setIsMenuOpen] = useRecoilState(isMenuOpenState);
   const [delay, setDelay] = useState(false);
   const [showText, setShowText] = useState(false);
+  const [diaryList, setDiaryList] = useRecoilState(diaryListState);
 
   const width860 = useMediaQuery({
     query: "(max-width:860px)",
@@ -25,6 +27,7 @@ function CombineMenu() {
         setShowText(true);
       }, 500);
     } else {
+      setDiaryList([])
       setShowText(false);
       setDelay(false);
     }

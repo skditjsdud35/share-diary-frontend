@@ -5,14 +5,15 @@ type ButtonProps = {
     content: string;
     loading?: boolean;
     disabled?: boolean;
+    selected?: boolean;
     htmlType?: "button" | "submit" | "reset";
     onClick?: () => void;
     style?: CSSProperties;
 }
 
-const BasicButton = ({ content, ...props }: ButtonProps) => {
+const BasicButton = ({ content, selected, ...props }: ButtonProps) => {
     return (
-        <ButtonWrap {...props}>
+        <ButtonWrap selected={selected} {...props}>
             <span>{content}</span>
         </ButtonWrap>
     )
@@ -21,10 +22,9 @@ const BasicButton = ({ content, ...props }: ButtonProps) => {
 
 export default BasicButton;
 
-const ButtonWrap = styled.button`
+const ButtonWrap = styled.button<{ selected?: boolean }>`
     width: 90%;
     display: block;
-    background: white;
     color: #6664FF;
     font-size: 16px;
     border: solid 1px #CCCCCC;
@@ -32,10 +32,13 @@ const ButtonWrap = styled.button`
     padding: 0.625rem 0;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: semi-bold;
+
+    background: ${(props) => props.selected ? '#D9D8FF' : 'white'};
+    font-weight: ${(props) => props.selected ? 'bold' : 'semi-bold'};
 
     &:hover {
       background: #D9D8FF;
       font-weight: bold;
     }
+
 `

@@ -3,9 +3,10 @@ import { Modal, Button, Checkbox, Form, Input } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { loginState } from "../../atom/loginState";
 import { useRecoilState, useRecoilValue } from "recoil";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import { diaryUpdateState } from "../../atom/recoil";
+import axiosInstance from "../../utils/TokenRefresher";
+import { loginId, diaryRoomHostId } from "../../atom/diary";
 
 const formItemLayout = {
   labelCol: {
@@ -37,6 +38,7 @@ function SideMenuModal(props: IModalProps) {
   const isLoggedIn = useRecoilValue(loginState);
   const [diaryUpdate, setDiaryUpdate] = useRecoilState(diaryUpdateState);
   const { diaryRoom } = useParams();
+  const [userId, setUserId] = useRecoilState(loginId);
 
   //작성 취소 시 form의 내용 초기화
   const handleCancel = () => {
@@ -44,17 +46,25 @@ function SideMenuModal(props: IModalProps) {
     props.closeModal();
   };
 
+  //일기방 초대
   const handleInvite = () => {
     if (form.getFieldValue("diaryInvite")[0] === "") {
       alert("이메일을 입력해 주세요");
       return;
     }
 
-    axios
-      .post("/api/v0/member-invite-histories", {
+    axiosInstance({
+      method: "POST",
+      headers: {
+        Authorization: localStorage.getItem("login-token"),
+      },
+      data: {
         diaryRoomId: Number(diaryRoom),
         emails: form.getFieldValue("diaryInvite"),
-      })
+        hostId: userId
+      },
+      url: "/api/v0/member-invite-histories",
+    })
       .then((res) => {
         const message =
           res.status === 200
@@ -69,51 +79,36 @@ function SideMenuModal(props: IModalProps) {
       .finally(() => handleCancel());
   };
 
+  //일기방 만들기
   const CreateDiaryRoom = () => {
-    axios
-      .get("/api/member/diary-room/validation", {
+
+    axiosInstance.post("/api/v0/diary-rooms",
+      {
+        name: form.getFieldValue("diaryName"),
+        emails: form.getFieldValue("diaryInvite"),
+      },
+      {
         headers: {
           Authorization: localStorage.getItem("login-token"),
         },
-      })
+      }
+    )
       .then((res) => {
-        if (res.status === 200) {
-          if (res.data) {
-            axios
-              .post(
-                "/api/v0/diary-rooms",
-                {
-                  name: form.getFieldValue("diaryName"),
-                  emails: form.getFieldValue("diaryInvite"),
-                },
-                {
-                  headers: {
-                    Authorization: localStorage.getItem("login-token"),
-                  },
-                }
-              )
-              .then((res) => {
-                const message =
-                  res.status === 200
-                    ? "일기방이 생성되었습니다"
-                    : res.data.message;
-                setDiaryUpdate(true);
-                alert(message);
-              })
-              .catch((error) => {
-                alert(error.response.data.error);
-                console.log(error, "일기방 생성하기");
-              })
-              .finally(() => {
-                setDiaryUpdate(false);
-                handleCancel();
-              });
-          } else {
-            alert("일기방은 최대 3개까지 생성 가능합니다.");
-          }
-        }
+        const message =
+          res.status === 200
+            ? "일기방이 생성되었습니다"
+            : res.data.message;
+        setDiaryUpdate(true);
+        alert(message);
       })
-      .catch((error) => console.log(error, "CreateDiaryRoom"));
+      .catch((error) => {
+        alert(error.response.data.error);
+        console.log(error, "일기방 생성하기");
+      })
+      .finally(() => {
+        setDiaryUpdate(false);
+        handleCancel();
+      });
   };
 
   const onClickBtn = () => {

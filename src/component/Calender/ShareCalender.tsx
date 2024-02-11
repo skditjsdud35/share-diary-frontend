@@ -40,9 +40,9 @@ const CalenderWrap = styled.div`
   .react-calendar {
     width: 70%;
     margin: auto;
-    border: none;
+    border: 1px solid #dfdfdf;
     border-radius: 20px;
-    box-shadow: 0px 0px 3px 1px #d9d9d9;
+    box-shadow: 10px 10px 20px #dfdfdf;
 
     .react-calendar__viewContainer {
       /* background: green; */

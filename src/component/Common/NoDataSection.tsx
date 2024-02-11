@@ -17,7 +17,7 @@ const CenteredWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%
+    margin-top: 50px;
 `;
 
 const TextWrap = styled.div<{ fontSize: string }>`
