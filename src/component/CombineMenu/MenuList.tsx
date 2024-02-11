@@ -29,7 +29,7 @@ function MenuList(props: { isMenuOpen: boolean }) {
   const [hasMore, setHasMore] = useState(true);
 
   let accessToken = localStorage.getItem('login-token');
-  const limit = 5;
+  const limit = 20;
 
   const fetchData = () => {
     if (isLoggedIn) {
