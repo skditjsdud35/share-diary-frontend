@@ -11,28 +11,45 @@ import ComponentsWrapper from '../../styles/ComponentsWrapper';
 import DarkButton from '../../component/Common/DarkButton';
 import BasicButton from '../../component/Common/BasicButton';
 import NoDataSection from '../../component/Common/NoDataSection';
+import LoadDataSection from '../../component/Common/LoadDataSection';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 function NotiList() {
 
     let navigate = useNavigate();
     let accessToken = localStorage.getItem('login-token');
+    const limit = 10;
     const isDesktopOrMobile = useMediaQuery({ query: '(max-width:768px)' });
     const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
     const [sortedList, setSortedList] = useState<any[]>([]);
+    const [inviteId, setInviteId] = useState(null);
+    const [hasMore, setHasMore] = useState(true);
 
     useEffect(() => {
+        if (isLoggedIn) {
+            fetchData();
+        }
+    }, []);
+
+    const fetchData = () => {
         axiosInstance.get('/api/v0/member-invite-histories', {
             headers: { Authorization: accessToken },
             params: {
-                limit: 10,
+                limit: limit,
+                inviteHistoryId: inviteId,
             }
         }).then((res) => {
             if (res.status === 200) {
-                setSortedList(res.data.data);
+                if (res.data.data.length > 0) {
+                    setSortedList(prevState => [...prevState, ...res.data.data]);
+                    const lastItemId = res.data.data[res.data.data.length - 1].id;
+                    setInviteId(lastItemId);
+                } else {
+                    setHasMore(false);
+                }
             }
         })
-    }, []);
-
+    };
 
     // 수락 & 거절
     const handleButtonClick = (action: string, id: number, index: number) => {
@@ -62,9 +79,15 @@ function NotiList() {
 
     return (
         <ComponentsWrapper>
-            <Container>
-                {sortedList ? (
-                    sortedList.map((item: Noti, index: number) => (
+            <Container id="scrollableDiv">
+                <InfiniteScroll
+                    dataLength={sortedList.length}
+                    next={fetchData}
+                    hasMore={hasMore}
+                    loader={<LoadDataSection />}
+                    scrollableTarget="scrollableDiv"
+                >
+                    {sortedList.map((item: Noti, index: number) => (
                         <>
                             <MyCard>
                                 <NotiContainer>
@@ -96,10 +119,9 @@ function NotiList() {
                                     })()}
                                 </NotiContainer>
                             </MyCard >
-                        </>))) : (
-                    <NoDataSection content='알림 내역이 없어요' fontSize="24px" />
-                )
-                }
+                        </>))}
+                </InfiniteScroll>
+                {sortedList.length === 0 && <NoDataSection content='알림 내역이 없어요' fontSize="24px" />}
             </Container>
         </ComponentsWrapper >
     );
