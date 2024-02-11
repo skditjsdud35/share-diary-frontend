@@ -49,6 +49,7 @@ function ChangePasswordModal(props: IModalProps) {
             url: "/api/member/pwd",
             headers: {
                 Authorization: accessToken,
+                'Content-Type': 'application/json',
             },
             data: {
                 password: password,

@@ -1,35 +1,66 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell } from "@fortawesome/free-regular-svg-icons";
 import styled from "styled-components";
-import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
-import { useSetRecoilState } from "recoil";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { useSetRecoilState, useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { isMenuOpenState } from "../../atom/uiAtom";
-import { useRecoilState } from "recoil";
 import { loginState } from "../../atom/loginState";
-import axios from "axios";
+import RoundButton from "../Common/RoundButton";
+import { Dropdown, Menu } from 'antd';
+import axiosInstance from "../../utils/TokenRefresher";
+import { diaryListState } from "../../atom/recoil";
+
 
 function Header() {
-  const setIsMenuOpen = useSetRecoilState(isMenuOpenState);
+  const [isMenuOpen, setIsMenuOpen] = useRecoilState(isMenuOpenState);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
+  const [count, setCount] = useState(0);
+  const [diaryList, setDiaryList] = useRecoilState(diaryListState);
   let navigate = useNavigate();
+  let accessToken = localStorage.getItem('login-token');
+
 
   //로그아웃
   const handleLogout = () => {
-    axios({
+    axiosInstance({
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: localStorage.getItem("login-token"),
       },
       url: "/api/auth/logout",
     }).then((response) => {
       setIsLoggedIn(false);
+      setDiaryList([]);
       localStorage.removeItem("login-token");
-      console.log(response);
-    });
+      navigate("/");
+    })
+      .catch((error) => {
+        console.log(error);
+      });
   };
+
+
+  const handleMenuClick = (e: any) => {
+    switch (e.key) {
+      case '1':
+        navigate("/myprofile");
+        break;
+      case '2':
+        navigate("/noti");
+        break;
+      default:
+        break;
+    }
+  };
+
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="1">마이 페이지</Menu.Item>
+      <Menu.Item key="2">알림 내역</Menu.Item>
+    </Menu>
+  );
+
 
   return (
     <HeaderWrap>
@@ -41,49 +72,42 @@ function Header() {
         />
         <h1 onClick={() => { navigate("/"); }} style={{ cursor: "pointer" }}>잇츠 다이어리</h1>
       </div>
-      <div>
+      <div style={{ marginRight: "30px", display: "flex" }}>
         {isLoggedIn ?
-          <><span className="bell">
-            <Icon icon={faBell} />
-            <span className="red" />
-          </span>
-            <span className="myInfo"
-              onClick={() => {
-                navigate("/mypage");
-              }}>
-              <Icon icon={faUser} />
-            </span>
-            <span
-              className="login-btn"
-              onClick={handleLogout}>로그아웃</span>
-          </> :
           <>
-            <span
-              className="login-btn"
-              onClick={() => {
-                navigate("/userLogin");
-              }}>로그인</span>
-          </>}
+            <div style={{ marginTop: "5px", marginRight: "10px" }}>
+              <Dropdown overlay={menu} trigger={['click']} placement="bottomLeft">
+                <span>
+                  <img alt="user-profile" src="/img/user-profile.png" style={{ cursor: "pointer", width: "28px", height: "28px" }} />
+                </span>
+              </Dropdown>
+            </div>
+            <RoundButton content="로그아웃" onClick={handleLogout} />
+          </> :
+          <RoundButton content="로그인" onClick={() => { navigate("/userLogin") }} />}
       </div>
-    </HeaderWrap>
+    </HeaderWrap >
   );
 }
 
 export default Header;
 
 const Icon = styled(FontAwesomeIcon)`
-  font-size:25px;
+  font-size: 25px;
 `
 
 const HeaderWrap = styled.div`
+  z-index: 999;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 18px;
   border-bottom: 1px solid #d9d9d9;
   padding: 0.75rem 1rem;
-  position: relative;
   height: 60px;
+  background: white;
+  top: 0; 
+  width: 100%; 
 
   h1 {
     font-weight: bold;
@@ -93,41 +117,7 @@ const HeaderWrap = styled.div`
     cursor: pointer;
   }
 
-  span {
-    margin: 0 0.375rem;
-    cursor: pointer;
 
-    svg {
-      margin-bottom: -3px;
-    }
-
-    :last-child {
-      margin-right: 0;
-      margin-bottom: 0;
-    }
-  }
-
-  .bell {
-    position: relative;
-  }
-
-  .red {
-    background: red;
-    position: absolute;
-    margin: 0;
-    border-radius: 50%;
-    top: 8px;
-    right: -1px;
-    width: 8px;
-    height: 8px;
-  }
-
-  .login-btn {
-    text-align: center;
-    font-size: 12px;
-    display: inline-block;
-    border: 1px solid #d9d9d9;
-    border-radius: 20px;
-    padding: 0.5rem 1rem;
-  }
 `;
+
+

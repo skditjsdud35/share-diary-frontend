@@ -11,10 +11,6 @@
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@mui/material": "^5.12.2",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
     "@types/node": "^16.18.12",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.10",
@@ -22,13 +18,17 @@
     "@types/react-slick": "^0.23.12",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
+    "animate.css": "^4.1.1",
     "antd": "^5.4.6",
     "axios": "^1.4.0",
     "eslint": "^8.53.0",
     "framer-motion": "^10.0.1",
+    "http-proxy-middleware": "^2.0.6",
     "react": "^18.2.0",
     "react-calendar": "^4.2.1",
+    "react-cookie": "^7.0.1",
     "react-dom": "^18.2.0",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-query": "^3.39.3",
     "react-responsive": "^9.0.2",
     "react-responsive-modal": "^6.4.1",
@@ -48,13 +48,12 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:8080",
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
-  "proxy": "http://localhost:8080",
   "browserslist": {
     "production": [
       ">0.2%",

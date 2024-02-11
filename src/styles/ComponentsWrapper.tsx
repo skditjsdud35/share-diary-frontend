@@ -13,7 +13,7 @@ function ComponentsWrapper(props: { children: React.ReactNode }) {
       <CombineMenu />
       <div className="wrap-right">
         <Header />
-        <div className="cont">{props.children}</div>
+        <div className="cont" style={{ height: 'calc(100vh - 80px)', overflow: "scroll" }}>{props.children}</div>
       </div>
     </Wrap>
   );
