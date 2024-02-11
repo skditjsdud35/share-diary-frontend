@@ -7,6 +7,11 @@ const diaryContent = atom<DiaryContent[]>({
     default: [],
   });
 
+const selectedDiaryId = atom<number>({
+    key: 'selectedDiaryId',
+    default: 0,
+  });
+
 const memberEmail = atom<string>({
     key: 'memberEmail',
     default: '',
@@ -27,12 +32,22 @@ const delegateRoomId = atom<number>({
     default: false,
   });
 
-const loginId = atom<string>({
+  const diaryRoomHostId = atom<number>({
+    key: 'diaryRoomHostId',
+    default: 0,
+  });
+
+  const loginId = atom<number>({
     key: 'loginId',
+    default: 0,
+  });
+
+  const loginNickname = atom<string>({
+    key: 'loginNickname',
     default: '',
   });
 
 
 
 
-export { diaryContent,memberEmail,delegateRoomId, delegateModalShow, isDelegate, loginId  };
+export { diaryContent,memberEmail,delegateRoomId, delegateModalShow, isDelegate, loginId, diaryRoomHostId, selectedDiaryId,loginNickname  };
