@@ -1,12 +1,12 @@
 import axiosInstance from '../utils/TokenRefresher';
 import * as t from '../types/types'
 
+
 //날짜별 일기 조회 API
 export const getDiary = async ({ diaryRoomId, searchDate, memberId, token }: { diaryRoomId: number, searchDate: string, memberId: number, token: string }) => {
     const res = await axiosInstance.get('/api/v0/daily-diaries', {
         headers: {
             Authorization: token,
-            "Content-Type": "application/json",
         },
         params: {
             diaryRoomId: diaryRoomId,
@@ -61,7 +61,7 @@ export const getEmoji = async ({ diaryId, token }: { diaryId: number, token: str
 }
 
 //일기방 이모지 저장 API
-export const postEmoji = async ({ diaryId, emoji, token }: { diaryId: number, emoji: string[], token: string }) => {
+export const postEmoji = async ({ diaryId, emoji, token }: { diaryId: number, emoji: string, token: string }) => {
     const res = await axiosInstance.post(`/api/emoji/${diaryId}`, {
         emoji: emoji
     }, {
