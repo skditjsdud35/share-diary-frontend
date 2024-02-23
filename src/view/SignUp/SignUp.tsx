@@ -95,7 +95,7 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
         setIsDuplicationLoading([...isDuplicationLoading])
         axios({
             method: "post",
-            url: "/api/member/loginId/validation",
+            url: `${process.env.REACT_APP_BACKEND_URL}/api/member/loginId/validation`,
             data: {
                 loginId: id
             },
