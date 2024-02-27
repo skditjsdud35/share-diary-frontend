@@ -2,19 +2,20 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import MenuList from "./MenuList";
 import SideMenuBtn from "./SideMenuBtn";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useMediaQuery } from "react-responsive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { isMenuOpenState } from "../../atom/uiAtom";
-import BasicButton from "../Common/BasicButton";
 import { diaryListState } from "../../atom/recoil";
+import { loginState } from "../../atom/loginState";
 
 function CombineMenu() {
   const [isMenuOpen, setIsMenuOpen] = useRecoilState(isMenuOpenState);
   const [delay, setDelay] = useState(false);
   const [showText, setShowText] = useState(false);
   const [diaryList, setDiaryList] = useRecoilState(diaryListState);
+  const isLoggedIn = useRecoilValue(loginState);
 
   const width860 = useMediaQuery({
     query: "(max-width:860px)",
@@ -44,9 +45,11 @@ function CombineMenu() {
       ) : null}
 
       {showText ? <>
-        <MenuList isMenuOpen={delay} />
-        <SideMenuBtn isMenuOpen={delay} />
-      </> : <></>}
+        {isLoggedIn ? <>
+          <MenuList isMenuOpen={delay} />
+          <SideMenuBtn isMenuOpen={delay} />
+        </> : <div className="login-text">로그인 후 이용해주세요.</div>} </> :
+        <></>}
     </CombineNav>
   );
 }
@@ -65,6 +68,12 @@ const CombineNav = styled.nav<{ width: string }>`
     right: 2rem;
     top: 2rem;
     font-size: 20px;
+  }
+
+  .login-text {
+    color: #B3B3B3;
+    text-align: center;
+    margin-top: 25px;
   }
   }
 `;
