@@ -8,7 +8,7 @@ import { isMenuOpenState } from "../../atom/uiAtom";
 import { loginState } from "../../atom/loginState";
 import RoundButton from "../Common/RoundButton";
 import { Dropdown, Menu } from 'antd';
-import axiosInstance from "../../utils/TokenRefresher";
+import axios from "axios";
 import { diaryListState } from "../../atom/recoil";
 import { MenuProps } from "antd";
 
@@ -24,7 +24,7 @@ function Header() {
 
   //로그아웃
   const handleLogout = () => {
-    axiosInstance({
+    axios({
       method: "POST",
       headers: {
         Authorization: localStorage.getItem("login-token"),
@@ -68,9 +68,9 @@ function Header() {
         <Icon
           icon={faBars}
           onClick={() => setIsMenuOpen((prev) => !prev)}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", paddingBottom: "5px" }}
         />
-        <h1 onClick={() => { navigate("/"); }} style={{ cursor: "pointer" }}>잇츠 다이어리</h1>
+        <img alt="user-profile" src="/img/site_logo.png" onClick={() => { navigate("/"); }} style={{ paddingTop: "10px", marginLeft: "20px", width: "120px", cursor: "pointer" }} />
       </div>
       <div style={{ marginRight: "30px", display: "flex" }}>
         {isLoggedIn ?
