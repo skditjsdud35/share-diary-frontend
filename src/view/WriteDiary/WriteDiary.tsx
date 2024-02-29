@@ -184,7 +184,7 @@ function WriteDiary() {
                                     src={i.icon}
                                     style={
                                         selectedFace === i.text
-                                            ? { backgroundColor: "#ffd400", borderRadius: "50%" }
+                                            ? { backgroundColor: "#E4D6FF", borderRadius: "50%" }
                                             : {}
                                     }
                                     onClick={() => handleFaceClick(i.text)}
@@ -244,8 +244,9 @@ const Image = styled.img`
   width: 50px;
 
   &:hover {
-    background-color: #ffd400;
+    background-color: #E4D6FF;
     border-radius: 50%;
+    
   }
 `;
 
