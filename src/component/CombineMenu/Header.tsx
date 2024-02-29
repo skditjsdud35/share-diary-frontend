@@ -10,6 +10,7 @@ import RoundButton from "../Common/RoundButton";
 import { Dropdown, Menu } from 'antd';
 import axiosInstance from "../../utils/TokenRefresher";
 import { diaryListState } from "../../atom/recoil";
+import { MenuProps } from "antd";
 
 
 function Header() {
@@ -40,26 +41,25 @@ function Header() {
       });
   };
 
-
-  const handleMenuClick = (e: any) => {
-    switch (e.key) {
-      case '1':
-        navigate("/myprofile");
-        break;
-      case '2':
-        navigate("/noti");
-        break;
-      default:
-        break;
+  //드롭다운 메뉴 아이템
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <div onClick={() => { navigate("/myprofile"); }}>
+          마이 페이지
+        </div>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <div onClick={() => { navigate("/noti"); }}>
+          알림 내역
+        </div>
+      )
     }
-  };
-
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1">마이 페이지</Menu.Item>
-      <Menu.Item key="2">알림 내역</Menu.Item>
-    </Menu>
-  );
+  ];
 
 
   return (
@@ -76,11 +76,10 @@ function Header() {
         {isLoggedIn ?
           <>
             <div style={{ marginTop: "5px", marginRight: "10px" }}>
-              <Dropdown overlay={menu} trigger={['click']} placement="bottomLeft">
-                <span>
-                  <img alt="user-profile" src="/img/user-profile.png" style={{ cursor: "pointer", width: "28px", height: "28px" }} />
-                </span>
+              <Dropdown menu={{ items }} placement="bottomLeft">
+                <img alt="user-profile" src="/img/user-profile.png" style={{ cursor: "pointer", width: "28px", height: "28px" }} />
               </Dropdown>
+
             </div>
             <RoundButton content="로그아웃" onClick={handleLogout} />
           </> :
