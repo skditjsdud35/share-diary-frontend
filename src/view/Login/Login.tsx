@@ -29,7 +29,7 @@ function Login() {
   const handleLogin = () => {
     axios({
       method: "POST",
-      url: "/api/auth/login",
+      url: process.env.REACT_APP_BACKEND_URL + "/api/auth/login",
       data: {
         loginId: id,
         password: password,

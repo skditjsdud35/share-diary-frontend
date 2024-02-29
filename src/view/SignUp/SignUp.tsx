@@ -95,7 +95,7 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
         setIsDuplicationLoading([...isDuplicationLoading])
         axios({
             method: "post",
-            url: `${process.env.REACT_APP_BACKEND_URL}/api/member/loginId/validation`,
+            url: process.env.REACT_APP_BACKEND_URL + "/api/member/loginId/validation",
             data: {
                 loginId: id
             },
@@ -123,7 +123,7 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
         setIsDuplicationLoading([...isDuplicationLoading])
         axios({
             method: "post",
-            url: "/api/member/email/validation",
+            url: process.env.REACT_APP_BACKEND_URL + "/api/member/email/validation",
             data: {
                 email: email
             },
