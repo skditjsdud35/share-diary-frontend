@@ -45,7 +45,7 @@ const DelegateModal = (props: ModalProps) => {
                 asIsHostId: id,
                 toBeHostId: selectedMemberId
             },
-            url: `/api/v0/diary-rooms/${roomId}`,
+            url: process.env.REACT_APP_BACKEND_URL + `/api/v0/diary-rooms/${roomId}`,
         }).then((response) => {
             if (response.data) {
                 alert("방장 위임을 완료했습니다")
@@ -68,7 +68,7 @@ const DelegateModal = (props: ModalProps) => {
             headers: {
                 Authorization: localStorage.getItem("login-token"),
             },
-            url: `/api/v0/diary-rooms/${roomId}`,
+            url: process.env.REACT_APP_BACKEND_URL + `/api/v0/diary-rooms/${roomId}`,
         }).then((response) => {
             if (response.data) {
                 alert("일기방 나가기를 완료했습니다")

@@ -58,7 +58,7 @@ function NotiList() {
 
         axiosInstance({
             method: "PATCH",
-            url: `/api/v0/member-invite-histories/${historyId}`,
+            url: process.env.REACT_APP_BACKEND_URL + `/api/v0/member-invite-histories/${historyId}`,
             data: {
                 status: action,
             },

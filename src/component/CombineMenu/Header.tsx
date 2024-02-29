@@ -29,7 +29,7 @@ function Header() {
       headers: {
         Authorization: localStorage.getItem("login-token"),
       },
-      url: "/api/auth/logout",
+      url: process.env.REACT_APP_BACKEND_URL + "/api/auth/logout",
     }).then((response) => {
       setIsLoggedIn(false);
       setDiaryList([]);

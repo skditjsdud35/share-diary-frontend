@@ -63,7 +63,7 @@ function SideMenuModal(props: IModalProps) {
         emails: form.getFieldValue("diaryInvite"),
         hostId: userId
       },
-      url: "/api/v0/member-invite-histories",
+      url: process.env.REACT_APP_BACKEND_URL + "/api/v0/member-invite-histories",
     })
       .then((res) => {
         const message =

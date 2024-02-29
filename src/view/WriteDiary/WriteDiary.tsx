@@ -94,7 +94,7 @@ function WriteDiary() {
         if (modify) {
             axios({
                 method: "PATCH",
-                url: `/api/v0/daily-diaries/${diary[3]}`,
+                url: process.env.REACT_APP_BACKEND_URL + `/api/v0/daily-diaries/${diary[3]}`,
                 headers: { Authorization: accessToken },
                 data: {
                     content: value,
@@ -115,7 +115,7 @@ function WriteDiary() {
         } else {
             axios({
                 method: "POST",
-                url: '/api/v0/daily-diaries',
+                url: process.env.REACT_APP_BACKEND_URL + '/api/v0/daily-diaries',
                 headers: { Authorization: accessToken },
                 data: {
                     content: value,

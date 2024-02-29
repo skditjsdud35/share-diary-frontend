@@ -72,7 +72,7 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
 
         axios({
             method: "post",
-            url: "/api/member/signUp",
+            url: process.env.REACT_APP_BACKEND_URL + "/api/member/signUp",
             data: {
                 loginId: id,
                 email: email,

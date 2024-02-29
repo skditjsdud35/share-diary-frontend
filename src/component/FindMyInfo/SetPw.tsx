@@ -18,7 +18,7 @@ const SetPw = () => {
     const sendCertNumber = () => {
         axios({
             method: "POST",
-            url: "/api/member/certification-number",
+            url: process.env.REACT_APP_BACKEND_URL + "/api/member/certification-number",
             data: {
                 loginId: loginId,
                 email: email,
@@ -35,7 +35,7 @@ const SetPw = () => {
     const chkCertNumber = () => {
         axios({
             method: "POST",
-            url: "/api/member/validation-certification-number",
+            url: process.env.REACT_APP_BACKEND_URL + "/api/member/validation-certification-number",
             data: {
                 certificationNumber: certNumber,
             },
@@ -68,7 +68,7 @@ const SetPw = () => {
 
         axios({
             method: "POST",
-            url: "/api/member/resetPassword",
+            url: process.env.REACT_APP_BACKEND_URL + "/api/member/resetPassword",
             data: {
                 loginId: loginId,
                 password: password,

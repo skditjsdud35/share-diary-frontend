@@ -14,6 +14,7 @@ import axiosInstance from '../../utils/TokenRefresher';
 import DelegateModal from '../../component/Modal/DelegateModal';
 import DeleteModal from '../../component/Modal/DelegateModal';
 import Modal from "../../component/Modal/DelegateModal"
+import BasicButton from '../../component/Common/BasicButton';
 
 
 function MyProfile() {
@@ -34,7 +35,7 @@ function MyProfile() {
         } else {
             axiosInstance({
                 method: "GET",
-                url: '/api/member/myPage',
+                url: process.env.REACT_APP_BACKEND_URL + '/api/member/myPage',
                 headers: { Authorization: accessToken }
             })
                 .then(res => {
@@ -73,14 +74,14 @@ function MyProfile() {
                                 readOnly
                             />
                             <S.InfoText>닉네임
-                                <Button style={{ float: 'right', marginBottom: '10px' }} onClick={() => showInfoModal()}>수정</Button>
+                                <BasicButton style={{ float: 'right', marginBottom: '10px', width: '100px' }} onClick={() => showInfoModal()} content='수정' />
                             </S.InfoText>
                             <S.MyMentions
                                 value={nickname}
                                 onChange={(value) => { setNickname(value); }}
                             />
                             <S.InfoText>비밀번호
-                                <S.LinkText color="blue" onClick={() => showPwModal()}> 비밀번호 변경 →</S.LinkText>
+                                <BasicButton style={{ float: 'right', marginBottom: '10px', width: '120px' }} onClick={() => showPwModal()} content='비밀번호 변경' />
                             </S.InfoText>
                             <S.MyMentions
                                 defaultValue="***********"

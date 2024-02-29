@@ -14,7 +14,7 @@ const FindId = () => {
     const clickFindBtn = () => {
         axios({
             method: "GET",
-            url: "/api/member/me/id",
+            url: process.env.REACT_APP_BACKEND_URL + "/api/member/me/id",
             params: {
                 email: text,
             },

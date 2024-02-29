@@ -31,7 +31,7 @@ function ChangePasswordModal(props: IModalProps) {
     const reqChkPassword = (password: string) => {
         const res = axios({
             method: "POST",
-            url: "/api/member/me/pwd",
+            url: process.env.REACT_APP_BACKEND_URL + "/api/member/me/pwd",
             headers: {
                 Authorization: accessToken,
             },
@@ -46,7 +46,7 @@ function ChangePasswordModal(props: IModalProps) {
     const reqChangePassword = (password: string, updatePassword: string) => {
         axios({
             method: "POST",
-            url: "/api/member/pwd",
+            url: process.env.REACT_APP_BACKEND_URL + "/api/member/pwd",
             headers: {
                 Authorization: accessToken,
                 'Content-Type': 'application/json',

@@ -40,7 +40,7 @@ function ChangeInfoModal(props: ModalProps) {
 
         axios({
             method: "PATCH",
-            url: '/api/member/me',
+            url: process.env.REACT_APP_BACKEND_URL + '/api/member/me',
             headers: { Authorization: accessToken },
             data: {
                 email: props.email,

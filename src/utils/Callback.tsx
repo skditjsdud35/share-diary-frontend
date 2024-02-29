@@ -18,7 +18,7 @@ function Callback() {
         if (code) {
             axios({
                 method: "POST",
-                url: `/api/auth/social/${provider}`,
+                url: process.env.REACT_APP_BACKEND_URL + `/api/auth/social/${provider}`,
                 data: {
                     code: code
                 },
@@ -27,7 +27,7 @@ function Callback() {
                 if (res.data.code === "M001") {
                     axios({
                         method: "POST",
-                        url: '/api/member/signUp/social',
+                        url: process.env.REACT_APP_BACKEND_URL + '/api/member/signUp/social',
                         data: {
                             id: "tjsdud9999",
                             email: "tjsdud9999@naver.com",
