@@ -19,7 +19,8 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 function MenuList(props: { isMenuOpen: boolean }) {
   const navigate = useNavigate();
   const isLoggedIn = useRecoilValue(loginState);
-  const diaryUpdate = useRecoilValue(diaryUpdateState);
+  const [diaryUpdate, setDiaryUpdate] = useRecoilState(diaryUpdateState);
+
   const [diaryList, setDiaryList] = useRecoilState(diaryListState);
   const [diaryId, setDiaryId] = useRecoilState(selectedDiaryId);
   const { diaryRoom } = useParams();
@@ -33,7 +34,9 @@ function MenuList(props: { isMenuOpen: boolean }) {
   const limit = 20;
 
   const fetchData = () => {
+    console.log(diaryUpdate,'diaryUpdatediaryUpdate')
     if (isLoggedIn) {
+      console.log('개이득')
       axiosInstance
         .get("/api/v0/diary-rooms", {
           headers: { Authorization: accessToken },
@@ -45,7 +48,7 @@ function MenuList(props: { isMenuOpen: boolean }) {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.length > 0) {
-              setDiaryList(prevState => [...prevState, ...res.data]);
+              setDiaryList(prevState => [...prevState, ...res.data].filter((element, index, array) => array.findIndex(item => item.id === element.id) === index));
               const lastItemId = res.data[res.data.length - 1].id;
               console.log(lastItemId)
               setLastId(lastItemId);
@@ -64,7 +67,7 @@ function MenuList(props: { isMenuOpen: boolean }) {
     if (isLoggedIn) {
       fetchData();
     }
-  }, [diaryUpdate, modalShow]);
+  }, [diaryList,diaryUpdate]);
 
 
   const showModal = (create: boolean) => {
