@@ -44,7 +44,8 @@ axiosInstance.interceptors.response.use(
                 isRefreshing = true;
 
                 try {
-                    const refreshResponse = await axiosInstance.get('/api/auth/token');
+                    // const refreshResponse = await axiosInstance.get('/api/auth/token');
+                    const refreshResponse = await axios.get('/api/auth/token');
                     console.log("성공?")
                     const newAccessToken = refreshResponse.data.accessToken;
                     console.log(newAccessToken);
