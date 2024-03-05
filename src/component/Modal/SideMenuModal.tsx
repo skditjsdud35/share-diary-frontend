@@ -4,7 +4,7 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { loginState } from "../../atom/loginState";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useParams } from "react-router-dom";
-import { diaryUpdateState } from "../../atom/recoil";
+import {diaryListState, diaryUpdateState} from "../../atom/recoil";
 import axiosInstance from "../../utils/TokenRefresher";
 import { loginId, diaryRoomHostId } from "../../atom/diary";
 
@@ -39,6 +39,8 @@ function SideMenuModal(props: IModalProps) {
   const [diaryUpdate, setDiaryUpdate] = useRecoilState(diaryUpdateState);
   const { diaryRoom } = useParams();
   const [userId, setUserId] = useRecoilState(loginId);
+  const [diaryList, setDiaryList] = useRecoilState<any>(diaryListState);
+
 
   //작성 취소 시 form의 내용 초기화
   const handleCancel = () => {
@@ -98,6 +100,9 @@ function SideMenuModal(props: IModalProps) {
           res.status === 200
             ? "일기방이 생성되었습니다"
             : res.data.message;
+        setDiaryList((prevState:any) => [{id:prevState.length, name:form.getFieldValue("diaryName") },...prevState, ].filter((element, index, array) => {
+          return array.findIndex(item => item.id === element.id) === index;
+        }))
         setDiaryUpdate(true);
         alert(message);
       })
