@@ -102,7 +102,7 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
         }).then((res) => {
             isDuplicationLoading[0] = false
             setIsDuplicationLoading([...isDuplicationLoading])
-            if (res.data) {
+            if (res.data.data) {
                 alert("이미 존재하는 아이디입니다.")
             } else {
                 isDuplication[0] = true
@@ -130,7 +130,7 @@ const SignUp = ({ userEmail }: { userEmail?: string | null | "" }) => {
         }).then((res) => {
             isDuplicationLoading[1] = false
             setIsDuplicationLoading([...isDuplicationLoading])
-            if (res.data) {
+            if (res.data.data) {
                 alert("이미 존재하는 이메일입니다.")
             } else {
                 isDuplication[1] = true
