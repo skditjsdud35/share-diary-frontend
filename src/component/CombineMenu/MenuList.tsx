@@ -47,7 +47,6 @@ function MenuList(props: { isMenuOpen: boolean }) {
             if (res.data.length > 0) {
               setDiaryList(prevState => [...prevState, ...res.data]);
               const lastItemId = res.data[res.data.length - 1].id;
-              console.log(lastItemId)
               setLastId(lastItemId);
             } else {
               setHasMore(false);
@@ -60,11 +59,33 @@ function MenuList(props: { isMenuOpen: boolean }) {
     }
   };
 
+  const initData = () => {
+    if (isLoggedIn) {
+      axiosInstance
+        .get("/api/v0/diary-rooms", {
+          headers: { Authorization: accessToken },
+          params: {
+            limit: limit
+          }
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            setDiaryList(res.data);
+            const lastItemId = res.data[res.data.length - 1].id;
+            setLastId(lastItemId);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
+
   useEffect(() => {
     if (isLoggedIn) {
-      fetchData();
+      initData();
     }
-  }, [diaryUpdate, modalShow]);
+  }, [diaryUpdate]);
 
 
   const showModal = (create: boolean) => {
