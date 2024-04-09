@@ -10,6 +10,7 @@ const useModal = (): [boolean, () => void, () => void] => {
 
     const closeModal = () => {
         setIsVisible(false);
+        console.log("test")
     };
 
     return [isVisible, showModal, closeModal];
